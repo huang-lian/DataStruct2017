@@ -6,8 +6,9 @@
 - 包含本文件，即在你的`*.cpp`文件开始写下
   ```C++ code
   // C++ file
-#include"array_stack.h"
+  #include"array_stack.h"
   ```
+
 ## 示例 
   见`test-array_stack.cpp`
 ## 限制
@@ -18,6 +19,7 @@
   ArrayStack<int>st(120);
   // other code ...
   ```
+
 - 使用`const Type & Top(void) const ` 前你应当确保栈不是空的，否则返回值不能被确定。你可以这样确保正常使用:
   ```C++ code
   // other code ...
@@ -27,3 +29,4 @@
     top = st.Top()
   // other code ...
   ```
+
