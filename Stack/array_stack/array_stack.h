@@ -5,10 +5,11 @@
  **/
 #ifndef ARRAY_STACK
 #define ARRAY_STACK
+#define MAX_SIZE_ARRST 100
 template<class Type>
 class ArrayStack {
   public:
-    explicit ArrayStack(size_t n = 100);
+    explicit ArrayStack(size_t n = MAX_SIZE_ARRST);
     ~ArrayStack();
     
     bool Push(const Type & data);
