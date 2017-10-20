@@ -10,7 +10,12 @@ template<class Type>
 class ArrayStack {
   public:
     explicit ArrayStack(size_t n = MAX_SIZE_ARRST);
+    ArrayStack(const ArrayStack<Type> & arr_st);
+    // 为了保证通用性实现
+
     ~ArrayStack();
+
+    const ArrayStack<Type> & operator=(const ArrayStack<Type> & arr_st);
     
     bool Push(const Type & data);
     bool Pop(void);
@@ -34,6 +39,33 @@ template<class Type>
 ArrayStack<Type>::ArrayStack(size_t n) : max_length_(n), top_(0) {
   space_ = new Type[max_length_];
 }
+
+template<class Type>
+ArrayStack<Type>::ArrayStack(const ArrayStack<Type> & arr_st)
+: max_length_(arr_st.max_length_), top_(arr_st.top_) {
+  space_ = new Type[max_length_];
+  for(size_t i = 0; i < top_; i++) { 
+    // top_ 作为边界稍微比 max_length_ 作为边界高效一些
+    space_[i] = arr_st.space_[i];
+  }
+}
+
+template<class Type>
+const ArrayStack<Type> & ArrayStack<Type>::operator=(const ArrayStack<Type> & arr_st) {
+  if ( &arr_st == this)
+    return *this;
+  delete [] space_;
+  max_length_ = arr_st.max_length_;
+  top_ = arr_st.top_;
+  space_ = new Type[max_length_];
+
+  for(size_t i = 0; i < top_; i++) { 
+    space_[i] = arr_st.space_[i];
+  }
+
+  return *this;
+}
+
 
 template<class Type>
 ArrayStack<Type>::~ArrayStack(void) {
