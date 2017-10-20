@@ -10,7 +10,7 @@ int main(void) {
   int ch = 1;
   while(0 != ch) {
     cout << "\t0.exit\t1.Push\t-1.Pop\t2.Top\n";
-      cin >> ch 
+      cin >> ch ;
     switch(ch) {
       case 1:
 	cout << "input n to push:";

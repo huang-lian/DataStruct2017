@@ -9,7 +9,9 @@ template<class Type>
 class LinkStack{
   public:
     LinkStack(void);
+    LinkStack(const LinkStack<Type> & lk_st);
     ~LinkStack(void);
+    const LinkStack<Type> & operator=(const LinkStack<Type> & lk_st);
 
     void MakeNull(void); 
     // 本函数和析构函数相关，放置在此
@@ -24,9 +26,9 @@ class LinkStack{
 
     bool IsEmpty(void) const;
 
-    //bool IsFull(void) const;
-    // 对于动态类型的，空的判断是否是不必要的，未实现，
-    // 但是还是对于内存耗尽保持怀疑，// #Q
+    bool IsFull(void) const;
+    // 对于动态类型的，空的判断是否是不必要的
+    // 但是还是对于内存耗尽保持怀疑， 
 
   private: 
     struct Element{
@@ -38,6 +40,64 @@ class LinkStack{
 
 template<class Type>
 LinkStack<Type>::LinkStack(void) :top_(0) {
+}
+
+template<class Type>
+LinkStack<Type>::LinkStack(const LinkStack<Type> & lk_st) {
+  Element *p = top_;
+  Element *pre_new_st_element = NULL;
+  Element *new_st_element = NULL;
+
+  if (NULL != p) {
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
+
+    lk_st.top_ = new_st_element;
+    pre_new_st_element = new_st_element;
+    p = p->next;
+  }
+  
+  for(; NULL != p; p = p->next) {
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
+
+    pre_new_st_element->next = new_st_element;
+    
+    pre_new_st_element = new_st_element;
+  }
+  pre_new_st_element->next = NULL;
+}
+
+template<class Type>
+const LinkStack<Type> & LinkStack<Type>::operator=(const LinkStack<Type> & lk_st) {
+  if (&lk_st == this)
+    return *this;
+  MakeNull();
+  Element *p = lk_st.top_;
+  Element *pre_new_st_element = NULL;
+  Element *new_st_element = NULL;
+
+  if (NULL != p) {
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
+
+    top_ = new_st_element;
+    pre_new_st_element = new_st_element;
+    p = p->next;
+  }
+  
+  for(; NULL != p; p = p->next) {
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
+
+    pre_new_st_element->next = new_st_element;
+    
+    pre_new_st_element = new_st_element;
+  }
+
+  pre_new_st_element->next = NULL;
+
+  return *this;
 }
 
 template<class Type>
@@ -99,4 +159,16 @@ template<class Type>
 bool LinkStack<Type>::IsEmpty(void) const {
   return NULL == top_;
 } 
+
+template<class Type>
+bool LinkStack<Type>::IsFull(void) const {
+  Element *p = NULL;
+  try {                 // 避免出现内存耗尽的情况
+    p = new Element;
+  } catch(const std::bad_alloc& e ){
+    return false;
+  }
+  delete p;
+  return true;
+}
 #endif // LINK_STACK
