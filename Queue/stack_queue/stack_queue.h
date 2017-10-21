@@ -37,10 +37,21 @@ class StackQueue{
     bool IsFull(void) const;
 
   private:
+    void Balance(void);
     LinkStack<Type> st_in_;
     LinkStack<Type> st_out_;
 
 };
+template<class Type>
+void StackQueue<Type>::Balance(void) {
+  if (st_out_.IsEmpty()) {
+    while(!st_in_.IsEmpty()) {
+      st_out_.Push(st_in_.Top());
+      st_in_.Pop();
+    }
+  }
+}
+
 
 template<class Type>
 StackQueue<Type>::StackQueue() {
@@ -79,12 +90,7 @@ template<class Type>
 bool StackQueue<Type>::DeQueue(void) {
   if (IsEmpty())
     return false;
-  if (st_out_.IsEmpty()) {
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
-    }
-  }
+  Balance();
   st_out_.Pop();
   return true;
 }
@@ -95,12 +101,7 @@ const Type & StackQueue<Type>::Front(void) {
     Type zero;  // 避免出现段错误返回一个默认值
     return zero;
   }
-  if (st_out_.IsEmpty()) {
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
-    }
-  }
+  Balance();
   return st_out_.Top();
 }
 
@@ -108,12 +109,7 @@ template<class Type>
 bool StackQueue<Type>::Front(Type & data) {
   if (IsEmpty())
     return false;
-  if (st_out_.IsEmpty()) {
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
-    }
-  }
+  Balance();
   data = st_out_.Top();
   return true;
 }
