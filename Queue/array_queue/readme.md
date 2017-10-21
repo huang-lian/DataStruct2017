@@ -1,5 +1,5 @@
 # `array_queue.h` 数组形式实现队列
-使用一个大小为`max_size`数组来存储和表示队列
+使用一个大小为`max_size`数组arr来存储和表示队列
 
 # 具体实现
 - 使用两个索引值front 和rear分别指向队首和队尾。
@@ -29,10 +29,13 @@
 
 # 限制
 - 数据类型应当支持operator=。`c_str`类型支持不友好，可以使用`std::string`替代。
-- 使用 `const Type & Front(void) const;`前请确保队列不为空.
+- 使用 `const Type & Front(void) const;`前请确保队列不为空.否则返回值是Type类型的默认值(或者是0);
+- 应当确保队列大小是`size_t`类型能表示的,而且队列长度不为0
+- 默认队列大小为100
 
 # 适用
-支持opertor= 的数据类型
+- 支持opertor= 的数据类型
+- $$(0,size\_t]$$ 大小的队列
 
 # 使用示例
 
