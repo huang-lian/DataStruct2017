@@ -112,10 +112,7 @@ bool ArrayQueue<Type>::DeQueue(void) {
 
 template<class Type>
 const Type & ArrayQueue<Type>::Front(void) const {
-  if (!IsEmpty())
-    return space_[front_];
-  Type zero;  // 避免出现段错误返回一个默认值
-  return zero;
+  return space_[front_];
 }
 
 template<class Type>

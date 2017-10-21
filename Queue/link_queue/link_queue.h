@@ -150,10 +150,7 @@ bool LinkQueue<Type>::DeQueue(void) {
 
 template<class Type>
 const Type & LinkQueue<Type>::Front(void) const {
-  if (!IsEmpty())
-    return front_->data;
-  Type zero;  // 避免出现段错误返回一个默认值
-  return zero;
+  return front_->data;
 }
 
 template<class Type>
