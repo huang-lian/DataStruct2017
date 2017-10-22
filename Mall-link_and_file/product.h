@@ -20,13 +20,15 @@ class Product{
 
     //bool set_id(void);
 
-    const std::string & name(void) const {return name_;};
+    const std::string & name(void)const {return name_;};
     const std::string & brand(void) const {return brand_;};
-    float price(void) const {return price_;};
-    size_t quantity(void) const {return quantity_;};
+    float price(void)const  {return price_;};
+    size_t quantity(void) const{return quantity_;};
 
     bool operator==(const Product & goods) const;
     bool operator!=(const Product & goods) const;
+    friend std::ostream& operator << (std::ostream &os, Product & goods);
+    friend std::istream &operator>>(std::istream & is, Product & goods);
   private:
     //size_t id_;
     std::string name_;
@@ -41,7 +43,7 @@ Product::Product(void) {
 
 Product::Product(const Product & goods) {
   name_ = goods.name_;
-  brand_ = goods.name_;
+  brand_ = goods.brand_;
   price_ = goods.price_;
   quantity_ = goods.quantity_;
 }
@@ -51,7 +53,7 @@ Product::~Product(void) {
 
 const Product & Product::operator=(const Product & goods) {
   name_ = goods.name_;
-  brand_ = goods.name_;
+  brand_ = goods.brand_;
   price_ = goods.price_;
   quantity_ = goods.quantity_;
 }
@@ -91,5 +93,13 @@ bool Product::operator==(const Product & goods) const {
 }
 bool Product::operator!=(const Product & goods) const {
   return !((*this)== goods);
+}
+std::ostream & operator << (std::ostream &os, Product & goods) {
+  os << goods.name_ <<"\t" << goods.brand_ << "\t" << goods.price_ << "\t" << goods.quantity_;
+  return os;
+}
+std::istream & operator>>(std::istream & is, Product & goods) {
+  is >> goods.name_  >> goods.brand_ >>  goods.price_ >>  goods.quantity_;
+    return is;
 }
 #endif // MALL_PRODUCT_H

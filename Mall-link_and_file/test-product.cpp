@@ -38,6 +38,7 @@ int main(void){
      prt(a);
   }
   b = a;
+  std::cout << a;
   a.set_price(112);
   prt(a);
   prt(b);
