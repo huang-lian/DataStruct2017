@@ -58,7 +58,8 @@ int choice(const char * msg) {
   char ch;
   while(true) {
     std::cout << msg;
-    std::cin >> ch;
+    std::cin.get(ch);
+    while('\n'!=ch && std::cin.get() != '\n');
     switch(ch) {
       case 'y':
       case 'Y': return 1;
@@ -83,7 +84,6 @@ void CommenceBusiess(const char * work_file){
       输入相应选项编号选择功能:";
     
     std::cin >> ch;
-    std::cin.get(ch);
 #if 1
     while(ch != '\n' && std::cin.get() != '\n');
 
