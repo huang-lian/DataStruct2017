@@ -2,12 +2,11 @@
 /* 库存管理系统
  * 版本0
  * */
-
 #include<iostream>
 #include<fstream>
 #include"mall.h"
+#include"ian_include.h"
 void CommenceBusiess(const char * work_file);
-int choice(const char * msg);
 int main(void)  {
   using namespace std;
   const char * work_file = "mall_data.mall";
@@ -25,10 +24,10 @@ int main(void)  {
 
     fin.close();
     // 不加载则默认退出程序
-    if (0 == choice(loadmsg)) {
+    if (!YesOrNo(loadmsg)) {
 
       // 不建立则退出
-      if (0 == choice(mkmsg)) {
+      if (!YesOrNo(mkmsg)) {
 	cout << "退出程序!\n";
 	return 0;
       }
@@ -41,7 +40,7 @@ int main(void)  {
     cout << "未检测到库存表\n需要建立库存表才可以继续运行.\n";
 
     // 不建立则退出
-    if (0 == choice(mkmsg)) {
+    if (!YesOrNo(mkmsg)) {
       cout << "退出程序!\n";
       return 0;
     }
@@ -54,27 +53,11 @@ int main(void)  {
   return 0;
 }
 
-int choice(const char * msg) {
-  char ch;
-  while(true) {
-    std::cout << msg;
-    std::cin.get(ch);
-    while('\n'!=ch && std::cin.get() != '\n');
-    switch(ch) {
-      case 'y':
-      case 'Y': return 1;
-      case 'n':
-      case 'N':
-      case 'q':
-      case 'Q': return 0;
-    }
-  }
-};
 // 开始工作
 void CommenceBusiess(const char * work_file){
   Mall store(work_file);
   char ch = 1;
-  while(0!=ch) {
+  while(0 != ch) {
     std::cout <<"库存管理\n\
       A.进货\n\
       B.出货\n\
@@ -82,11 +65,8 @@ void CommenceBusiess(const char * work_file){
       D.更新产品信息\n\
       Q.结束营业\n\
       输入相应选项编号选择功能:";
-    
-    std::cin >> ch;
-#if 1
-    while(ch != '\n' && std::cin.get() != '\n');
 
+    ch = LineAchar();
     std::cout <<"# choice #" << ch << std::endl;
     switch(ch) {
       case '1':
