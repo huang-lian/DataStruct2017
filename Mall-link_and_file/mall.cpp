@@ -19,10 +19,13 @@ bool Mall::SetAppNum(Product &app) {/*{{{*/
   using std::cout;
   using std::cin;
   cout << "数量";
-  while(!(cin >> n)){
+  if (!(cin >> n)){
     cin.clear();
     while(cin.get() != '\n');
+    return false;
+
   }
+  cin.get();
   return ( n >= 0) && app.set_quantity(n);
 }/*}}}*/
 bool Mall::SetAppPrice(Product &app) {/*{{{*/
@@ -32,33 +35,33 @@ bool Mall::SetAppPrice(Product &app) {/*{{{*/
   return app.set_price(price);
 }/*}}}*/
 bool Mall::SetProuct(Product &app) {/*{{{*/
-    cout << "依次键入商品名称 品牌 价格 数量\n";
-    if (!SetAppName(app)) {
-      cout << "商品名错误!";
-      return false;
-    }
-    if (!SetAppBrand(app)) {
-      cout << " 品牌不符合规范";
-      return false;
-    }
-    if (!SetAppPrice(app)) {
-      cout << "价格错误\n";
-      return false;
-    }
-    if (!SetAppPrice(app)) {
-      // #fix
-      cout << "num\n";
-      continue;
-    }
-    return true;
+  using std::cout;
+  cout << "依次键入\n";
+  if (!SetAppName(app)) {
+    cout << "商品名错误!";
+    return false;
+  }
+  if (!SetAppBrand(app)) {
+    cout << " 品牌不符合规范";
+    return false;
+  }
+  if (!SetAppPrice(app)) {
+    cout << "价格错误\n";
+    return false;
+  }
+  if (!SetAppNum(app)){
+    cout << "数量不合规范\n";
+    return false;
+  }
+  return true;
 
 }/*}}}*/
-Mall::Appliances *GetAlterList(const Product & alter_goods) {/*{{{*/
+Mall::Appliances *Mall::GetAlterList(const Product & alter_goods) {/*{{{*/
   // 筛选出同名电器.存入备选表
   Appliances * alter_list = NULL;
   for(Appliances * p = app_list_; NULL != p; p = p->next) {
     if(p->app.name() == alter_goods.name()) {
-      Appliances * pnew_alter = new Appliances;
+      Appliances * pnew_alter = new Mall::Appliances;
       pnew_alter->app = p->app;
       pnew_alter->next = alter_list;
       alter_list = pnew_alter;
@@ -67,7 +70,7 @@ Mall::Appliances *GetAlterList(const Product & alter_goods) {/*{{{*/
   return alter_list;
 }/*}}}*/
 
-size_t ShowAlterList(const Mall::Appliances *alter_list) {/*{{{*/
+size_t Mall::ShowAlterList(Mall::Appliances *alter_list) {/*{{{*/
   std::cout << "该类商品信息如下:\n";
   size_t cnt = 0;
   for(Appliances *p = alter_list; NULL != p; p = p->next) {
@@ -138,19 +141,20 @@ void Mall::StartBusiness(const char * file_name) {/*{{{*/
     count_add ++;
   }
   fin.close();
-  // #fix
-  std::cout << "dao  " << count_add << " \n";
+  std::cout << "一共录入  " << count_add << "项目 \n";
 }/*}}}*/
 
 void Mall::Stock(void) {/*{{{*/
+  ShowAlterList(app_list_);
   using std::cin;
   using std::cout;
   using std::endl;
+
+  ShowAlterList(app_list_);
   std::cout << "进货引导\n";
 
   const char *msg = "没有该货物,是否进货(y/n)?";
   Product alter_goods;
-  char ch;
   size_t count_stock = 0;
   Appliances * alter_list = NULL;   // 备选表
   while(!EnterQ()) {
@@ -222,7 +226,6 @@ void Mall::Pick(void) {/*{{{*/
 
   const char *msg = "没有该货物,无法提货";
   Product alter_goods;
-  char ch;
   Appliances * alter_list = NULL;   // 备选表
   while(!EnterQ()) {
     alter_list = Free(alter_list);  // 清空备选表
@@ -284,6 +287,7 @@ ADD_N:
   Free(alter_list);
 }/*}}}*/
 void Mall::Search(void) {/*{{{*/
+  ShowAlterList(app_list_);
   std::cout << "查询引导:\n";
   using std::cin;
   using std::cout;
@@ -317,7 +321,8 @@ void Mall::Search(void) {/*{{{*/
     if(!SetAppBrand(alter_goods)){
       cout << "商品名称不符合标准.(1-255)字符)\n";
       continue;
-    }
+   }
+    Appliances *p = NULL;
     for(p= alter_list; NULL != p; p =p->next) {
       if (p->app == alter_goods){
 	alter_goods = p->app;  
@@ -334,7 +339,6 @@ void Mall::Search(void) {/*{{{*/
   Free(alter_list);
 }/*}}}*/
 void Mall::Update(void) {
-  using std::cin;
   using std::cout;
   using std::endl;
 
@@ -343,25 +347,49 @@ void Mall::Update(void) {
   char ch;
   Appliances * alter_list = NULL;   // 备选表
   while(0 != ch) {
+    ShowAlterList(app_list_);
     std::cout << "商品信息更新引导\n\
-      A.add\n\
-      B.Delete\n\
-      C.change\n\
-      Input you choice:";
+      a.添加产品\n\
+      b.删除产品\n\
+      c.修改已有产品\n\
+      键入选项:";
     ch = LineAchar();
+    cout << "选择了 #" << ch << endl;
     switch(ch) {
-      case '1';
+      case '1':
       case 'a':
-      case 'A'; CreateList():
+      case 'A': CreateList();
       case '2':
       case 'b':
       case 'B':
+		if(!SetAppName(alter_goods))
+		  break;
+		if(!SetAppBrand(alter_goods))
+		  break;
+		if(Delete(alter_goods)){
+		  cout << "已删除产品\n";
+		} else {
+		  cout << "无该产品,删除失败!\n";
+		} 
+		break;
+
       case '3':
       case 'c':
       case 'C':
+		if(!SetAppName(alter_goods))
+		  break;
+		if(!SetAppBrand(alter_goods))
+		  break;
+		if(Delete(alter_goods)) {
+		  Insert(alter_goods);
+		  cout << "已修改" << endl;
+		} else {
+		  cout << " 无该产品,信息无法修改\n";
+		}
+		break;
       case '0':
       case 'q':
-      case 'Q': ch = 0;
+      case 'Q': ch = 0; break;
       default:
 		std::cout << "无该选项,请重新输入选择!\n";
     }
@@ -394,6 +422,7 @@ void Mall::Update(void) {
       cout << "商品名称不符合标准.(1-255)字符)\n";
       continue;
     }
+    Appliances *p = NULL;
     for(p= alter_list; NULL != p; p =p->next) {
       if (p->app == alter_goods){
 	alter_goods = p->app;  

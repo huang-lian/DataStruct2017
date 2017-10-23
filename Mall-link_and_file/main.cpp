@@ -88,6 +88,5 @@ void CommenceBusiess(const char * work_file){
       default:
 		std::cout << "无该选项,请重新输入选择!\n";
     }
-#endif
   }
 }

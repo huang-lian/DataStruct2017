@@ -32,9 +32,9 @@ class Mall{
     bool SetAppBrand(Product &app); 
     bool SetAppPrice(Product &app);
     bool SetAppNum(Product &app);
-    bool SetProuct(&app);
+    bool SetProuct(Product &app);
     Appliances *GetAlterList(const Product & alter_goods);
-    size_t ShowAlterList(const Appliances *alter_list);
+    size_t ShowAlterList(Appliances *alter_list);
     Appliances *Free(Appliances*  list);
     bool Insert(const Product & app);
     bool Delete(const Product & app);
