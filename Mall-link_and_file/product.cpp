@@ -33,6 +33,7 @@ bool Product::set_name(const char * new_name) {
   }
   std::cout << "商品名:";
   std::cin >> name_;
+  std::cin.get();
   if (0 >= name_.size() || 255 < name_.size())
     return false;
   return true;
@@ -47,6 +48,7 @@ bool Product::set_brand(const char * new_barnd) {
 
   std::cout << "品牌名:";
   std::cin >> brand_;
+  std::cin.get();
   if (0 >= brand_.size() || 255 < brand_.size())
     return false;
   return true;

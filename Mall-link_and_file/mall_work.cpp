@@ -2,7 +2,7 @@
 #include<fstream>
 #include"mall_work.h"
 #include"ian_include.h"
-
+#define debug
 using std::cout;
 using std::endl;
 const char * err_in_msg = "输入错误,请重新输入!\n";
@@ -87,7 +87,7 @@ void MallWork::Stock(void)
 	cout << "异常错误,联系管理\n";
       }
     } 
-    else 
+    else if(NULL != search_reult)
     {
       cout << "进货前该产品数量为:\n";
       cout << search_reult ->app << endl;
@@ -125,7 +125,7 @@ void MallWork::Pick(void)
 
     if((NULL == search_reult))
     {
-      cout << "无该货物,无法提货";
+      cout << "无该货物,无法提货\n";
     }
     else if (search_reult->app.quantity() < goods.quantity())
     {
@@ -183,269 +183,7 @@ void MallWork::Search(void)
   }
 }/*}}}*/
 
-MallWork::MallWork(const char * work_file)
-{/*{{{*/
-  Init(work_file);
-}/*}}}*/
-
-MallWork::MallWork(void)
-{/*{{{*/
-  store_ = NULL;
-}/*}}}*/
-
-MallWork::MallWork(const MallWork & mlwork)
-{/*{{{*/
-  SetStore(mlwork);
-}/*}}}*/
-
-MallWork::~MallWork(void)
-{/*{{{*/
-  store_ = Free(store_);
-}/*}}}*/
-
-MallWork & MallWork::operator=(const MallWork & mlwork)
-{/*{{{*/
-  if (&mlwork == this)
-    return *this;
-  store_ = Free(store_);
-  SetStore(mlwork);
-  return *this;
-}/*}}}*/
-
-
-// 合并opertor= 和 拷贝构造函数部分公共代码.
-void MallWork::SetStore(const MallWork & mlwork)
-{/*{{{*/
-  AppNode * p = mlwork.store_;
-  AppNode * pre = NULL;
-  AppNode * new_node;
-  if (NULL != p) {
-
-    new_node = new AppNode;
-    new_node-> app = p->app;
-    store_ = new_node;
-    pre = new_node;
-  }
-  for(p = mlwork.store_; NULL != p; p = p->next)
-  {
-    AppNode * new_node = new AppNode;
-    new_node-> app = p->app;
-    pre->next = new_node;
-    pre = new_node;
-  }
-}/*}}}*/
-
-
-
-void MallWork::SeachAtName(void)
-{/*{{{*/
-  Product goods;
-  AppNode * search_reult = NULL;
-  do{
-  cout << "请输入";
-  if(goods.set_name())
-  {
-    cout << "查找结果如下:\n";
-    search_reult = SameName(goods);
-    if(NULL != search_reult)
-    {
-      cout << search_reult->app;
-    }
-  } else {
-    cout << "输入不合法!\n";
-  }
-  }while(EnterQ());
-
-}/*}}}*/
-void MallWork::SeachAtBrand(void)
-{/*{{{*/
-  Product goods;
-  AppNode * p;
-  do{
-    cout << "请输入";
-    if(goods.set_brand())
-    {
-      cout << "查找结果如下:\n";
-      int cnt = 0;
-      for(p = store_; NULL != p; p = p->next)
-      {
-	if(p->app.brand() == goods.brand())
-	{
-	  cout << p->app << endl;
-	  cnt ++;
-	}
-      }
-      cout << "数量" << cnt << endl;
-    } else {
-      cout << "输入不合法!\n";
-    }
-  }while(EnterQ());
-
-}/*}}}*/
-
-void MallWork::SeachAtPrice(void) const
-{/*{{{*/
-  Product max;
-  Product min;
-  cout << "按照价格查询\n";
-  cout << "需要输入上限和下限来查找\n";
-  while(!EnterQ())
-  {
-    cout << "请输入价格上限";
-    while(! max.set_price())
-    {
-      cout << err_in_msg;
-      cout << "请输入价格上限";
-    }
-    cout << "请输入价格下限";
-    while((!min.set_price()) || max < min)
-    {
-      cout << err_in_msg;
-      cout << "请输入价格下限";
-    }
-    cout << "查找结果如下:\n";
-    int cnt = 0;
-    for(AppNode* p = store_; NULL != p; p = p->next)
-    {
-      if(min < p->app && p->app < max) 
-      {
-	cout << p->app << endl;
-	cnt ++;
-      }
-    }
-    cout << "数量" << cnt << endl;
-  }
-}/*}}}*/
-
-void MallWork::SeachAtStore(void) const
-{/*{{{*/
-  Product max;
-  Product min;
-  cout << "按照库存查询\n";
-  cout << "需要输入库存上限和下限来查找\n";
-  while(!EnterQ())
-  {
-    cout << "请输入库存上限";
-    while(! max.quantity())
-    {
-      cout << err_in_msg;
-      cout << "请输入库存上限";
-    }
-    cout << "请输入库存下限";
-    while((!min.quantity())||max.quantity() < min.quantity())
-    {
-      cout << err_in_msg;
-      cout << "请输入库存下限";
-    }
-    cout << "查找结果如下:\n";
-    int cnt = 0;
-    for(AppNode *p = store_; NULL != p; p = p->next)
-    {
-      if (min.quantity() <= p->app.quantity()
-	  && p->app.quantity() <= max.quantity())
-      {
-	cout << p->app << endl;
-	cnt ++;
-      }
-    }
-    cout << "数量" << cnt << endl;
-  }
-}/*}}}*/
-void MallWork::Update(void)
-{/*{{{*/
-  ShowLink(store_);
-  char ch = 1;
-  while(0 != ch)
-  {
-    std::cout <<"==================\n\
-      更新选择选择\n\
-      A.添加产品\n\
-      B.删除产品\n\
-      C.修改产品信息\n\
-      Q.回到营业\n\
-      输入相应选项编号选择功能:";
-
-    ch = LineAchar();
-    std::cout <<"# choice #" << ch << std::endl;
-    switch(ch) {
-      case '1':
-      case 'a':
-      case 'A': Create(); break;
-      case '2': 
-      case 'b':	
-      case 'B': Del(); break;
-      case '3': 
-      case 'c': 
-      case 'C': Change(); break;
-      case '0':
-      case 'q': 
-      case 'Q': ch = 0;
-      default:
-		std::cout << "无该选项,请重新输入选择!\n";
-    }
-  }
-
-}/*}}}*/
-
-void MallWork::Del(void)
-{/*{{{*/
-  Product goods;
-  AppNode * search_reult;
-  do{
-  cout << "请输入";
-  if(goods.set_name())
-  {
-    cout << "查找结果如下:\n";
-    search_reult = SameName(goods);
-    if(NULL != search_reult)
-    {
-      cout << search_reult->app;
-      Delete(goods);
-      cout << "***已删除***\n";
-    }
-  } else {
-    cout << "输入不合法!\n";
-  }
-  }while(EnterQ());
-
-}/*}}}*/
-
-void MallWork::Change(void)
-{/*{{{*/
-  Product goods;
-  AppNode * search_reult;
-  do{
-  cout << "请输入";
-  if(goods.set_name())
-  {
-    cout << "查找结果如下:\n";
-    search_reult = SameName(goods);
-    if(NULL != search_reult)
-    {
-      cout << search_reult->app;
-      cout << "输入新值\n";
-      while(!goods.set_brand())
-      {
-	cout << err_in_msg;
-      }
-      while(!goods.set_price())
-      {
-	cout << err_in_msg;
-      }
-      cout << "***已修改***\n";
-    } else
-    {
-      cout << "没有该产品,无法修改!\n";
-      continue;
-    }
-  } else {
-    cout << "输入不合法!\n";
-  }
-  }while(EnterQ());
-
-
-}/*}}}*/
-
+// 文件读写
 void MallWork::Stop(const char * file_name)
 {/*{{{*/
   cout << "------------------------\n\
@@ -454,7 +192,7 @@ void MallWork::Stop(const char * file_name)
   AppNode * p = store_;
   size_t count = 0;
   while(NULL != p){
-    fout << p->app << std::endl;
+    fout << p->app << endl;
     p = p->next;
     count ++;
   }
@@ -472,16 +210,21 @@ void MallWork::Read(const char * file_name)
   }
   Product app;
   size_t count_add = 0;
+  //char endl_ch;
   while(!fin.eof()){
-    fin>>app;
-    Insert(app);
-    count_add ++;
+    if(fin>>app && Insert(app))
+    {
+      cout << app << endl;
+      count_add ++;
+    }
   }
   fin.close();
   std::cout << "一共录入  " << count_add << "项目 \n";
 
 }/*}}}*/
 
+
+// 链表操作
 void MallWork::Create(const char * work_file)
 {/*{{{*/
   Product goods;
@@ -631,3 +374,272 @@ int MallWork::ShowLink(MallWork::AppNode *header)
   return cnt;
 
 }/*}}}*/
+
+
+void MallWork::SeachAtName(void)
+{/*{{{*/
+  Product goods;
+  AppNode * search_reult = NULL;
+  do{
+  cout << "请输入";
+  if(goods.set_name())
+  {
+    cout << "查找结果如下:\n";
+    search_reult = SameName(goods);
+    if(NULL != search_reult)
+    {
+      cout << search_reult->app << endl;
+    }
+  } else {
+    cout << "输入不合法!\n";
+  }
+  }while(!EnterQ());
+
+}/*}}}*/
+void MallWork::SeachAtBrand(void)
+{/*{{{*/
+  Product goods;
+  AppNode * p;
+  do{
+    cout << "请输入";
+    if(goods.set_brand())
+    {
+      cout << "查找结果如下:\n";
+      int cnt = 0;
+      for(p = store_; NULL != p; p = p->next)
+      {
+	if(p->app.brand() == goods.brand())
+	{
+	  cout << p->app << endl;
+	  cnt ++;
+	}
+      }
+      cout << "数量" << cnt << endl;
+    } else {
+      cout << "输入不合法!\n";
+    }
+  }while(!EnterQ());
+
+}/*}}}*/
+
+void MallWork::SeachAtPrice(void) const
+{/*{{{*/
+  Product max;
+  Product min;
+  cout << "按照价格查询\n";
+  cout << "需要输入上限和下限来查找\n";
+  while(!EnterQ())
+  {
+    cout << "请输入价格上限";
+    while(! max.set_price())
+    {
+      cout << err_in_msg;
+      cout << "请输入价格上限";
+    }
+    cout << "请输入价格下限";
+    while((!min.set_price()) || max < min)
+    {
+      cout << err_in_msg;
+      cout << "请输入价格下限";
+    }
+    cout << "查找结果如下:\n";
+    int cnt = 0;
+    for(AppNode* p = store_; NULL != p; p = p->next)
+    {
+      if(min < p->app && p->app < max) 
+      {
+	cout << p->app << endl;
+	cnt ++;
+      }
+    }
+    cout << "数量" << cnt << endl;
+  }
+}/*}}}*/
+
+void MallWork::SeachAtStore(void) const
+{/*{{{*/
+  Product max;
+  Product min;
+  cout << "按照库存查询\n";
+  cout << "需要输入库存上限和下限来查找\n";
+  while(!EnterQ())
+  {
+    cout << "请输入库存上限";
+    while(! max.quantity())
+    {
+      cout << err_in_msg;
+      cout << "请输入库存上限";
+    }
+    cout << "请输入库存下限";
+    while((!min.quantity())||max.quantity() < min.quantity())
+    {
+      cout << err_in_msg;
+      cout << "请输入库存下限";
+    }
+    cout << "查找结果如下:\n";
+    int cnt = 0;
+    for(AppNode *p = store_; NULL != p; p = p->next)
+    {
+      if (min.quantity() <= p->app.quantity()
+	  && p->app.quantity() <= max.quantity())
+      {
+	cout << p->app << endl;
+	cnt ++;
+      }
+    }
+    cout << "数量" << cnt << endl;
+  }
+}/*}}}*/
+void MallWork::Update(void)
+{/*{{{*/
+  ShowLink(store_);
+  char ch = 1;
+  while(0 != ch)
+  {
+    std::cout <<"==================\n\
+      更新选择选择\n\
+      A.添加产品\n\
+      B.删除产品\n\
+      C.修改产品信息\n\
+      Q.回到营业\n\
+      输入相应选项编号选择功能:";
+
+    ch = LineAchar();
+    std::cout <<"# choice #" << ch << std::endl;
+    switch(ch) {
+      case '1':
+      case 'a':
+      case 'A': Create(); break;
+      case '2': 
+      case 'b':	
+      case 'B': Del(); break;
+      case '3': 
+      case 'c': 
+      case 'C': Change(); break;
+      case '0':
+      case 'q': 
+      case 'Q': ch = 0;
+      default:
+		std::cout << "无该选项,请重新输入选择!\n";
+    }
+  }
+
+}/*}}}*/
+
+void MallWork::Del(void)
+{/*{{{*/
+  Product goods;
+  AppNode * search_reult;
+  do{
+  cout << "请输入";
+  if(goods.set_name())
+  {
+    cout << "查找结果如下:\n";
+    search_reult = SameName(goods);
+    if(NULL != search_reult)
+    {
+      cout << search_reult->app;
+      Delete(goods);
+      cout << "***已删除***\n";
+    }
+  } else {
+    cout << "输入不合法!\n";
+  }
+  }while(!EnterQ());
+
+}/*}}}*/
+
+void MallWork::Change(void)
+{/*{{{*/
+  Product goods;
+  AppNode * search_reult;
+  do{
+  cout << "请输入";
+  if(goods.set_name())
+  {
+    cout << "查找结果如下:\n";
+    search_reult = SameName(goods);
+    if(NULL != search_reult)
+    {
+      cout << search_reult->app;
+      cout << "输入新值\n";
+      while(!goods.set_brand())
+      {
+	cout << err_in_msg;
+      }
+      while(!goods.set_price())
+      {
+	cout << err_in_msg;
+      }
+      search_reult->app = goods;
+      cout << "***已修改***\n";
+      cout <<"修改结果:\n";
+      cout << search_reult->app;
+    } else
+    {
+      cout << "没有该产品,无法修改!\n";
+      continue;
+    }
+  } else {
+    cout << "输入不合法!\n";
+  }
+  }while(!EnterQ());
+
+
+}/*}}}*/
+
+
+// 三大函数 
+MallWork::MallWork(const char * work_file)
+{/*{{{*/
+  Init(work_file);
+}/*}}}*/
+
+MallWork::MallWork(void)
+{/*{{{*/
+  store_ = NULL;
+}/*}}}*/
+
+MallWork::MallWork(const MallWork & mlwork)
+{/*{{{*/
+  SetStore(mlwork);
+}/*}}}*/
+
+MallWork::~MallWork(void)
+{/*{{{*/
+  store_ = Free(store_);
+}/*}}}*/
+
+MallWork & MallWork::operator=(const MallWork & mlwork)
+{/*{{{*/
+  if (&mlwork == this)
+    return *this;
+  store_ = Free(store_);
+  SetStore(mlwork);
+  return *this;
+}/*}}}*/
+
+
+// 合并opertor= 和 拷贝构造函数部分公共代码.
+void MallWork::SetStore(const MallWork & mlwork)
+{/*{{{*/
+  AppNode * p = mlwork.store_;
+  AppNode * pre = NULL;
+  AppNode * new_node;
+  if (NULL != p) {
+
+    new_node = new AppNode;
+    new_node-> app = p->app;
+    store_ = new_node;
+    pre = new_node;
+  }
+  for(p = mlwork.store_; NULL != p; p = p->next)
+  {
+    AppNode * new_node = new AppNode;
+    new_node-> app = p->app;
+    pre->next = new_node;
+    pre = new_node;
+  }
+}/*}}}*/
+
+
