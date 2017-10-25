@@ -11,6 +11,11 @@ int InPutN(const char * err_msg) {
   std::cin.get();  // deal end char
   return n;
 }
+/*
+ * 读取一行的第一个字符
+ * 余下的字符,舍弃(不在缓存区)
+ * 换行符号也被读入
+ * */
 char LineAchar(void)
 {
   char ch;

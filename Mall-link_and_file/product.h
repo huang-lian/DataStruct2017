@@ -13,10 +13,10 @@ class Product{
     ~Product(void);
     const Product & operator=(const Product & goods);
 
-    bool set_name(std::string & new_name);
-    bool set_brand(std::string & new_barnd);
-    bool set_price(float new_price);
-    bool set_quantity(size_t new_quantity);
+    bool set_name(const char * new_name = NULL);
+    bool set_brand(const char * new_barnd = NULL);
+    bool set_price(float new_price = -1);
+    bool set_quantity(size_t new_quantity = (size_t)-1);
 
     //bool set_id(void);
 
@@ -25,8 +25,11 @@ class Product{
     float price(void)const  {return price_;};
     size_t quantity(void) const{return quantity_;};
 
+    const Product  & operator+=(const Product & goods);
+    const Product & operator-=(const Product & goods);
+
     bool operator==(const Product & goods) const;
-    bool operator!=(const Product & goods) const;
+    bool operator<(const Product & goods) const;
     friend std::ostream& operator << (std::ostream &os, Product & goods);
     friend std::istream &operator>>(std::istream & is, Product & goods);
   private:
