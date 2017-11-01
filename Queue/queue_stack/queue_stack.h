@@ -1,5 +1,11 @@
-#ifndef QUEUE_STACK
-#define QUEUE_STACK
+// C ++ file
+/*
+ * 使用队列模拟栈
+ * O(1)出栈,访问栈顶
+ * O(N)入栈
+ * */
+#ifndef QUEUE_STACK_H
+#define QUEUE_STACK_H
 #include"../link_queue/link_queue.h"
 template<class Type>
 class QueueStack {
@@ -24,27 +30,27 @@ class QueueStack {
     bool IsFull(void) const;
 
     void MakeNull(void);
-  private:
-    LinkQueue<Type> que_st1_;
-    LinkQueue<Type> que_st2_;
+    private:
+    LinkQueue<Type> st1_;
+    LinkQueue<Type> st2_;
 };
 
 template<class Type>
-QueueStack<Type>::QueueStack(): que_st1_(), que_st2_() {
+QueueStack<Type>::QueueStack(): st1_(), st2_() {
 }
 
 template<class Type>
 QueueStack<Type>::QueueStack(const QueueStack<Type> & que_st)
-  que_st1_ = que_st.que_st1_;
-  que_st2_ = que_st.que_st2_;
+  st1_ = que_st.st1_;
+  st2_ = que_st.st2_;
 }
 
 template<class Type>
 const QueueStack<Type> & QueueStack<Type>::operator=(const QueueStack<Type> & que_st) {
   if ( &que_st == this)
     return *this;
-  que_st1_ = que_st.que_st1_;
-  que_st2_ = que_st.que_st2_;
+  st1_ = que_st.st1_;
+  st2_ = que_st.st2_;
   return *this;
 }
 
@@ -55,46 +61,62 @@ QueueStack<Type>::~QueueStack(void) {
 
 template<class Type>
 bool QueueStack<Type>::Push(const Type & data) {
-  if (IsFull())
+ if (IsFull())
     return false;
-  if (!que_st1_.IsEmpty())
-    que_st1_.Push(data);
-  else if (!que_st2_.IsEmpty())
-    que_st2_.Push(data);
-  else
-    que_st1_.Push(data);
+  Type tmp_data;
+  if (st1_.IsEmpty()) {
+    st1_.EnQueue(data);
+    while(!st2_.IsEmpty()) {
+      st1_.EnQueue(st2_.Front());
+      st2_.DnQueue();
+    }
+  } else {
+    st2_.EnQueue(data);
+    while(!st1_.IsEmpty()) {
+      st2_.EnQueue(st1_.Front());
+      st1_.DeQueue();
+    }
+  }
   return true;
-}
+ }
 
 template<class Type>
 bool QueueStack<Type>::Pop(void) {
   if (IsEmpty())
     return false;
-  // #working
-      return true;
+  if (!st1_.IsEmpty())
+    st1_.DnQueue();
+  else 
+    st2_.DnQueue();
+  return true;
 }
 
 template<class Type>
 const Type & QueueStack<Type>::Top(void) const {
   // undefine if stack is empty 
-  return space_[top_ - 1];
+  if (!st1_.IsEmpty())
+    return st1_.Front();
+  else
+    return st2_.Front();
 }
 
 template<class Type>
 bool QueueStack<Type>::Top(Type & data) const {
   if (IsEmpty())
     return false;
-  data = space_[top_ - 1];
-  return true;
+  if (!st1_.IsEmpty())
+    return st1_.Front(data);
+  else
+    return st2_.Front(data);
 }
 
 template<class Type>
 bool QueueStack<Type>::IsFull(void) const {
-  return que_st1_.IsFull() || que_st2_.IsFull();
+  return st1_.IsFull() || st2_.IsFull();
 }
 
 template<class Type>
 bool QueueStack<Type>::IsEmpty(void) const {
-  return que_st1_.IsEmpty() && que_st2_.IsEmpty();
+  return st1_.IsEmpty() && st2_.IsEmpty();
 }
-#endif // QUEUE_STACK
+#endif // QUEUE_STACK_H
