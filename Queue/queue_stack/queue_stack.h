@@ -119,4 +119,9 @@ template<class Type>
 bool QueueStack<Type>::IsEmpty(void) const {
   return st1_.IsEmpty() && st2_.IsEmpty();
 }
+template<class Type>
+void QueueStack::MakeNull(void) {
+  st1_.MakeNull();
+  st2_.MakeNull();
+}
 #endif // QUEUE_STACK_H
