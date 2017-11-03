@@ -62,6 +62,7 @@ void Poly::Free(void) {
     header = header->next;
     delete p;
   }
+  header = NULL;
 }
 
 Poly::Poly(void) {
@@ -71,6 +72,7 @@ Poly::Poly(int m, int n) {
   header = new PolyNode;
   header->coef = m;
   header->exp = n;
+  header->next = NULL;
 }
 
 Poly::Poly(const Poly & apoly) {

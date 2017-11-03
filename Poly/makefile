@@ -1,7 +1,7 @@
 Target = main
 RM = -rm -rf
 
-CPPFLAGS = -fexec-charset=GBK -finput-charset=utf-8 -Wall -O0 -g -s -std=c++11
+CPPFLAGS = -fexec-charset=gbk -finput-charset=utf-8 -Wall -O0 -g -s -std=c++11
 CPP = g++
 $(Target): main.o poly.o
 	$(CPP) -o $@ $^ $(CPPFLAGS)
