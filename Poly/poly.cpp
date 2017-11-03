@@ -144,7 +144,7 @@ std::ostream & operator<<(std::ostream & os, const Poly & apoly) {
     os << 0;
     return os;
   }
-  for(p; NULL != p; p = p->next) {
+  for(; NULL != p; p = p->next) {
     if (p != apoly.header)
       os << ((p->coef > 0)?" + ":" ");
 
@@ -170,7 +170,6 @@ std::ostream & operator<<(std::ostream & os, const Poly & apoly) {
   return os;
 }
 std::istream & operator>>(std::istream & is, Poly & apoly) {
-  using std::cin;
   using std::cout;
   using std::endl;
   cout << "说明:\n\
@@ -180,14 +179,15 @@ std::istream & operator>>(std::istream & is, Poly & apoly) {
   int exp = 0;
 
   while(true) {
-    if (!(cin>>coef)) break;
+    if (!(is>>coef)) break;
     if (0 == coef) break;
-    if (!(cin>>exp)) break;
+    if (!(is>>exp)) break;
     apoly.Insert(coef, exp);
   }
-  if(cin.bad()) {
+  if(is.bad()) {
     cout << "键入了非法字符!\n";
-    cin.clear();
-    while('\n' != cin.get());
+    is.clear();
+    while('\n' != is.get());
   }
+  return is;
 }
