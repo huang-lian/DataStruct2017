@@ -1,18 +1,22 @@
-Target = main
-RM = -rm -rf
-
-CPPFLAGS = -fexec-charset=utf-8 -Wall -O1 -g  -std=c++11
+TARGET = main
+OBJS = main.o expr.o ian.o
+INC =./include
+VPATH = src:include
 CPP = g++
-
-$(Target): main.o expr.o
-	$(CPP) -o $@ $^ $(CPPFLAGS)	
-main.o: expr.h
-expr.o: expr.h link_stack.h
-.PHONY: clean 
+CPPFLAGS = -fexec-charset=utf-8 -Wall -O1 -g  -std=c++11 -I $(INC)
+$(TARGET): $(OBJS)
+	$(CPP) $^ -o $@ $(CPPFLAGS)
+	$(RM) $(OBJS) *.d
+%.d : %.cpp
+	@set -e; $(RM) $@; \
+	  $(CPP) -MM $< $(CPPFLAGS) > $@.$$$$; \
+	  sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	  $(RM) $@.$$$$
+-include $(OBJS:.o=.d)
+.PHONY: clean run
 clean:
-	$(RM) $(Target) *.exe *.o *.gch *.out
-
-run:
-	make clean
-	make
-	./$(Target)
+	$(RM) $(TARGET) $(OBJS) *.d
+run :
+	@set -e; make; \
+	  $(RM) $(OBJS) *.d
+	./$(TARGET)

@@ -1,9 +1,5 @@
-#ifndef IAN_INCLUDE_H
-#define IAN_INCLUDE_H
-char LineAchar(void);
-bool YesOrNo(const char * msg);
-bool EnterQ(void);
-
+#include<iostream>
+#include"ian.h"
 char LineAchar(void)
 {
   char ch;
@@ -11,6 +7,7 @@ char LineAchar(void)
   while('\n'!=ch && EOF != ch && std::cin.get() != '\n');
   return ch;
 }
+
 bool EnterQ(void)
 {
   std::cout << "Q-Enter to quit,and any other key to continue.";
@@ -36,4 +33,3 @@ bool YesOrNo(const char * msg)
     }
   }
 }
-#endif // IAN_INCLUDE_H
