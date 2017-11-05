@@ -40,7 +40,7 @@ QueueStack<Type>::QueueStack(): st1_(), st2_() {
 }
 
 template<class Type>
-QueueStack<Type>::QueueStack(const QueueStack<Type> & que_st)
+QueueStack<Type>::QueueStack(const QueueStack<Type> & que_st) {
   st1_ = que_st.st1_;
   st2_ = que_st.st2_;
 }
@@ -68,7 +68,7 @@ bool QueueStack<Type>::Push(const Type & data) {
     st1_.EnQueue(data);
     while(!st2_.IsEmpty()) {
       st1_.EnQueue(st2_.Front());
-      st2_.DnQueue();
+      st2_.DeQueue();
     }
   } else {
     st2_.EnQueue(data);
@@ -85,9 +85,9 @@ bool QueueStack<Type>::Pop(void) {
   if (IsEmpty())
     return false;
   if (!st1_.IsEmpty())
-    st1_.DnQueue();
+    st1_.DeQueue();
   else 
-    st2_.DnQueue();
+    st2_.DeQueue();
   return true;
 }
 
@@ -120,7 +120,7 @@ bool QueueStack<Type>::IsEmpty(void) const {
   return st1_.IsEmpty() && st2_.IsEmpty();
 }
 template<class Type>
-void QueueStack::MakeNull(void) {
+void QueueStack<Type>::MakeNull(void) {
   st1_.MakeNull();
   st2_.MakeNull();
 }

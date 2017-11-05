@@ -97,7 +97,7 @@ double Expr::StrToF(int lhs, int rhs, const char * expr)
       continue;
     }
     if (is_float) {
-      frac /= 10;
+      frac *= 0.1;
       sum = sum + (expr[i]- '0')*frac;
     } else {
       sum = sum*10 + (expr[i] - '0');
@@ -257,12 +257,13 @@ void Expr::set_infix_expr(const char * c_str_expr)
     }
     PostInsert(p,infix_expr_);
 
+    if (10 < i - num_start_pos) {
+      is_valid_ = false;  // 字符过长
+
     is_float = false;
     num_start_pos = -1;
     flag_pre = 1;
   
-    if (10 < i - num_start_pos) {
-      is_valid_ = false;  // 字符过长
     }
   }/*}}}*/
   else if ( 5 != flag_pre)   // 如果表达式结尾的既不是数也不是又括号,非法
@@ -443,7 +444,7 @@ void Expr::Limits(void)
            + - * / % \n\
     - 表达式中可以包含空格,以及括号( ) \n\
     - 表达式不支持e, pi 等这类符号常数.\n\
-    - 表达式中的整数不能超出9位\n\
+    - 表达式中的整数不能超出9位(包含其中的空白符号)\n\
     - [-] 只能作为负号出现时即:\n\
     	- 需要在后面接一个常数,而是表达式或者(\n\
 	- [-]前面不能是运算符号.\n\
