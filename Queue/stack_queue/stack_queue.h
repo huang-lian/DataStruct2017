@@ -80,8 +80,9 @@ void StackQueue<Type>::MakeNull(void) {
 }
 template<class Type>
 bool StackQueue<Type>::EnQueue(const Type & data) {
-  if(IsFull())
+  if(IsFull()) {
     return false;
+  }
   st_in_.Push(data);
   return true;
 }

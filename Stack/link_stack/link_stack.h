@@ -166,9 +166,9 @@ bool LinkStack<Type>::IsFull(void) const {
   try {                 // 避免出现内存耗尽的情况
     p = new Element;
   } catch(const std::bad_alloc& e ){
-    return false;
+    return true;
   }
   delete p;
-  return true;
+  return false;
 }
 #endif // LINK_STACK

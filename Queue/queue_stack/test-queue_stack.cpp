@@ -15,7 +15,7 @@ int main(void) {
       case 1:
 	cout << "input n to push:";
 	cin >> n;
-	if(st.Push(n)) cout << "Push!\n";
+	if(st.Push(n)) cout << "Push " << n << endl;
 	else cout << "full\n";
 	break;
       case -1:
