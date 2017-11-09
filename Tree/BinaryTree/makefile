@@ -1,6 +1,6 @@
 TARGET = main.out
 OBJS = main.o 
-INC =./
+INC =./include
 VPATH = src:include
 
 CPP = g++
