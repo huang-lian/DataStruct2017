@@ -1,4 +1,4 @@
 .PHONY: all
 all:
 	git add .
-	git commit -m"make"
+	git commit -m"Auto comit %d%h%m%s"
