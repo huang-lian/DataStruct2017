@@ -23,6 +23,7 @@ class BinaryTree{
     void InOrder(void) const;
     void PostOrder(void) const;
     void LeverOrder(void) const;
+    void LeverNumAndRight(void) const;
     size_t Count(void) const;
     size_t Height(void) const;
     void Exchange(void);
@@ -44,6 +45,7 @@ class BinaryTree{
     void RecurCreate(BTreeNode * &root);
    // Non-recursive
     void NonRecurPreOrder() const;
+    void NonRecurPreOrderR() const;
     void NonRecurInOrder() const;
     void NonRecurPostOrder() const;
     void NonRecurCreate();
@@ -128,6 +130,26 @@ void BinaryTree::NonRecurPreOrder() const
   cout << endl;
 }/*}}}*/
 
+void BinaryTree::NonRecurPreOrderR() const
+{/*{{{*/
+  LinkStack<BTreeNode *> st;
+  BTreeNode * p = root_;
+  while(NULL == p) {
+      Visit(p);
+    if(NULL != p->rchild) {
+      st.Push(p->rchild);
+    }
+    if (NULL != p->lchild) {
+      p = p->lchild;
+    } else if (st.Top(p)) {
+      st.Pop();
+    } else {
+      p = NULL;
+    }
+  }
+  cout << endl;
+}/*}}}*/
+
 void BinaryTree::NonRecurInOrder() const
 {/*{{{*/
   LinkStack<BTreeNode *> st;
@@ -199,7 +221,7 @@ void BinaryTree::NonRecurCreate()
     3. 存在相同编号,则数据保存的是最后输入的节点.而且这会造成内存泄漏.\n\
     4. 不符合二叉树结构的数据也会造成内存泄漏或者错误.暂时未解决.\n\
     参考: DS2017_PPT-3-45_Li\n\
-    逻辑上是和完全二叉树的顺序存储结构一致";
+    逻辑上是和完全二叉树的顺序存储结构一致\n";
   cin >> i >> ch;
   if(!cin.good()) {
     cout << "输入有错误!\n";
@@ -310,6 +332,7 @@ void BinaryTree::Create(void)
     示例:\n\
     ABDH##I##E##CF##J##G##\n";
   RecurCreate(root_);
+  cout << "================================\n";
   NonRecurCreate();
   // #fix
   //
@@ -321,6 +344,8 @@ void BinaryTree::PreOrder(void) const
   RecurPreOrder(root_);
   cout << endl;
   cout << "非递归先序遍历\n";
+  NonRecurPreOrder();
+  cout << "非递归先序遍历R\n";
   NonRecurPreOrder();
 }/*}}}*/
 
@@ -362,6 +387,46 @@ void BinaryTree::LeverOrder(void) const
 
     if(NULL != p->rchild) {
       que.EnQueue(p->rchild);
+    }
+  }
+  cout << endl;
+}/*}}}*/
+
+void BinaryTree::LeverNumAndRight(void) const
+{/*{{{*/
+  cout << "每一层最后一个元素\n";
+  LinkQueue<BTreeNode *> que;
+  BTreeNode *p = root_;
+  BTreeNode *pre = root_;
+  size_t lever = 0;
+  size_t count = 0;
+  if (NULL == root_) {
+    Visit(p);
+    return;
+  }
+  que.EnQueue(p);
+  que.EnQueue(NULL);
+  while(!que.IsEmpty()) {
+    pre = p; //每一行的开头了?
+    que.Front(p);
+    que.DeQueue(); 
+    if (NULL == p) {
+      lever ++;
+      cout << "Lever " << lever << "\tNo." << count <<"\t";
+      Visit(pre);
+      cout << endl;
+      count = 0;
+      if (que.IsEmpty())
+	break;
+      que.EnQueue(p);
+    } else {
+      count++;
+      if (NULL != p->lchild) {
+	que.EnQueue(p->lchild);
+      }
+      if (NULL != p->rchild) {
+	que.EnQueue(p->rchild);
+      }
     }
   }
   cout << endl;

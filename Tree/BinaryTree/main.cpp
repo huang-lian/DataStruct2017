@@ -8,6 +8,7 @@ int main(void) {
   bt.InOrder();
   bt.PostOrder();
   bt.LeverOrder();
+  bt.LeverNumAndRight();
   bt.Count();
   bt.Height();
   bt.Exchange();
