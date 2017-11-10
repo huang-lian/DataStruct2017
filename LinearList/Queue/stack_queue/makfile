@@ -1,0 +1,9 @@
+main.out : test-stack_queue.cpp main.h
+	g++ -o main.out test-stack_queue.cpp
+.PHONY:run clean
+run :
+	make
+	./main.out
+clean:
+	rm -f *.out
+
