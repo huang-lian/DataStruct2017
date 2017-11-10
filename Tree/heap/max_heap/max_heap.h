@@ -1,6 +1,4 @@
-/*
- * 链式结构的大根堆（应当存在限制大小的大根堆，数组形式）
- * */
+/* * 链式结构的大根堆（应当存在限制大小的大根堆，数组形式） * */
 #ifndef MAX_HEAP_H 
 #define MAX_HEAP_H
 template<class Type>

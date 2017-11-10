@@ -24,4 +24,4 @@ run :
 test:
 	make clean
 	make
-	./$(TARGET) < data1
+	./$(TARGET) < data2

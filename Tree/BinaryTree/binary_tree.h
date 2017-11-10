@@ -27,7 +27,7 @@ class BinaryTree{
     size_t Count(void) const;
     size_t Height(void) const;
     void Exchange(void);
-
+    bool operator==(const BinaryTree & bt);
   private:
     struct BTreeNode{
  //     Type data;
@@ -52,13 +52,12 @@ class BinaryTree{
     size_t Count(const BTreeNode * root) const;
     size_t Height(const BTreeNode * root) const;
     void Exchange(BTreeNode * & root);
+    bool Equal(const BTreeNode * root1, const BTreeNode *root2);
+    BTreeNode * Copy(const BTreeNode * root);
 
     void Free(BTreeNode * &root);
 };
 
-using std::cout;
-using std::endl;
-using std::cin;
 void BinaryTree::Visit(const BTreeNode * root) const
 {/*{{{*/
   if (NULL != root)
@@ -127,7 +126,7 @@ void BinaryTree::NonRecurPreOrder() const
       p = p->rchild;
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 void BinaryTree::NonRecurPreOrderR() const
@@ -147,7 +146,7 @@ void BinaryTree::NonRecurPreOrderR() const
       p = NULL;
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 void BinaryTree::NonRecurInOrder() const
@@ -165,7 +164,7 @@ void BinaryTree::NonRecurInOrder() const
       p = p->rchild;
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 void BinaryTree::NonRecurPostOrder() const
@@ -198,7 +197,7 @@ void BinaryTree::NonRecurPostOrder() const
       p = p->rchild; // 遍历右
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 void BinaryTree::NonRecurCreate()
@@ -208,7 +207,7 @@ void BinaryTree::NonRecurCreate()
   struct BTreeNode *p;
   const int max_size = 101;
   struct BTreeNode *arr[max_size];   // 用于保存结点地址,便于后续录入.
-  cout << "\
+  std::cout << "\
     非递归建立左右链式的二叉树.\n\
     依次输入结点编号 节点数据.以空白符号分隔.\n\
     结束标识是: 0 # \n\
@@ -222,11 +221,11 @@ void BinaryTree::NonRecurCreate()
     4. 不符合二叉树结构的数据也会造成内存泄漏或者错误.暂时未解决.\n\
     参考: DS2017_PPT-3-45_Li\n\
     逻辑上是和完全二叉树的顺序存储结构一致\n";
-  cin >> i >> ch;
-  if(!cin.good()) {
-    cout << "输入有错误!\n";
-    cin.clear();
-    while('\n' != cin.get());
+  std::cin >> i >> ch;
+  if(!std::cin.good()) {
+    std::cout << "输入有错误!\n";
+    std::cin.clear();
+    while('\n' != std::cin.get());
   }
   while(i>0 && i < max_size&& '#' != ch)
   {
@@ -244,11 +243,11 @@ void BinaryTree::NonRecurCreate()
 	arr[j]->rchild = p;
       }
     }
-    cin >>i >> ch;
-    if(!cin.good()) {
-      cout << "输入有错误!\n";
-      cin.clear();
-      while('\n' != cin.get());
+    std::cin >>i >> ch;
+    if(!std::cin.good()) {
+      std::cout << "输入有错误!\n";
+      std::cin.clear();
+      while('\n' != std::cin.get());
       break;
     }
   }
@@ -263,7 +262,7 @@ size_t BinaryTree::Count(const BTreeNode * root) const
 
 void BinaryTree::Exchange(BTreeNode * &root)
 {/*{{{*/
-  if(NULL != root) {
+  if (NULL != root) {
   BTreeNode *p = root->lchild;
   root->lchild = root->rchild;
   root->rchild = p;
@@ -281,6 +280,29 @@ size_t BinaryTree::Height(const BTreeNode * root) const
   size_t m = Height(root->rchild);
   return (m>n)?m + 1: n +1;
 }/*}}}*/
+
+bool BinaryTree::Equal(const BTreeNode * root1, const BTreeNode *root2)
+{/*{{{*/
+  if (NULL == root1 && NULL == root2)
+    return true;
+  if (NULL != root1 && NULL != root2)
+    if (root1->data == root2->data)
+      return Equal(root1->lchild,root2->rchild);
+  return false;
+} //:~Equal/*}}}*/
+
+BinaryTree::BTreeNode * BinaryTree::Copy(const BTreeNode * root)
+{/*{{{*/
+  BTreeNode * tmp = NULL;
+  if(NULL != root) {
+    tmp = new BTreeNode;
+    tmp->data = root->data;
+    tmp->lchild = Copy(root->lchild);
+    tmp->rchild = Copy(root->rchild);
+  }
+  return tmp;
+} //:~Copy/*}}}*/
+
 void BinaryTree::Free(BTreeNode * & root)
 {/*{{{*/
   if(NULL != root)
@@ -300,7 +322,7 @@ BinaryTree::BinaryTree(void)
 
 BinaryTree::BinaryTree(const BinaryTree & btree)
 {/*{{{*/
-  // #pass
+  root_ = Copy(btree.root_);
 }/*}}}*/
 
 BinaryTree::~BinaryTree(void)
@@ -309,15 +331,15 @@ BinaryTree::~BinaryTree(void)
 }/*}}}*/
 
 BinaryTree & BinaryTree::operator=(const BinaryTree &btree)
-{
+{/*{{{*/
   if (&btree == this)
     return *this;
 
   MakeNull();
-  // #pass
+  root_ = Copy(btree.root_);
   return *this;
 
-}
+}/*}}}*/
 
 void BinaryTree::MakeNull(void)
 {/*{{{*/
@@ -326,13 +348,13 @@ void BinaryTree::MakeNull(void)
 
 void BinaryTree::Create(void)
 {/*{{{*/
-  cout << "\
+  std::cout << "\
     按照先序序列建立左右链式结构的二叉树\n\
     ,每个字符代表一个节点数据,以#表示空.\n\
     示例:\n\
     ABDH##I##E##CF##J##G##\n";
   RecurCreate(root_);
-  cout << "================================\n";
+  std::cout << "================================\n";
   NonRecurCreate();
   // #fix
   //
@@ -340,36 +362,36 @@ void BinaryTree::Create(void)
 
 void BinaryTree::PreOrder(void) const
 {/*{{{*/
-  cout << "递归先序遍历\n";
+  std::cout << "递归先序遍历\n";
   RecurPreOrder(root_);
-  cout << endl;
-  cout << "非递归先序遍历\n";
+  std::cout << std::endl;
+  std::cout << "非递归先序遍历\n";
   NonRecurPreOrder();
-  cout << "非递归先序遍历R\n";
+  std::cout << "非递归先序遍历R\n";
   NonRecurPreOrder();
 }/*}}}*/
 
 void BinaryTree::InOrder(void) const
 {/*{{{*/
-  cout << "递归中序遍历\n";
+  std::cout << "递归中序遍历\n";
   RecurInOrder(root_);
-  cout << endl;
-  cout << "非递归中序遍历\n";
+  std::cout << std::endl;
+  std::cout << "非递归中序遍历\n";
   NonRecurInOrder();
 }/*}}}*/
 
 void BinaryTree::PostOrder(void) const
 {/*{{{*/
-  cout << "递归后序遍历\n";
+  std::cout << "递归后序遍历\n";
   RecurPostOrder(root_);
-  cout << endl;
-  cout << "非递归后续遍历\n";
+  std::cout << std::endl;
+  std::cout << "非递归后续遍历\n";
   NonRecurPostOrder();
 } /*}}}*/
 
 void BinaryTree::LeverOrder(void) const
 {/*{{{*/
-  cout << "层序遍历\n";
+  std::cout << "层序遍历\n";
   LinkQueue<BTreeNode *> que;
   BTreeNode *p = root_;
   if (NULL == root_) {
@@ -389,12 +411,12 @@ void BinaryTree::LeverOrder(void) const
       que.EnQueue(p->rchild);
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 void BinaryTree::LeverNumAndRight(void) const
 {/*{{{*/
-  cout << "每一层最后一个元素\n";
+  std::cout << "每一层最后一个元素\n";
   LinkQueue<BTreeNode *> que;
   BTreeNode *p = root_;
   BTreeNode *pre = root_;
@@ -412,9 +434,9 @@ void BinaryTree::LeverNumAndRight(void) const
     que.DeQueue(); 
     if (NULL == p) {
       lever ++;
-      cout << "Lever " << lever << "\tNo." << count <<"\t";
+      std::cout << "Lever " << lever << "\tNo." << count <<"\t";
       Visit(pre);
-      cout << endl;
+      std::cout << std::endl;
       count = 0;
       if (que.IsEmpty())
 	break;
@@ -429,29 +451,29 @@ void BinaryTree::LeverNumAndRight(void) const
       }
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }/*}}}*/
 
 size_t BinaryTree::Count(void) const
 {/*{{{*/
   size_t num = Count(root_);
-  cout << "num = " << num << endl;
+  std::cout << "num = " << num << std::endl;
   return num;
 }/*}}}*/
 
 size_t BinaryTree::Height(void) const
 {/*{{{*/
   size_t h = Height(root_);
-  cout << "Height = " << h << endl;
+  std::cout << "Height = " << h << std::endl;
   return h;
 }/*}}}*/
 
 void BinaryTree::Exchange(void)
-{
-  cout << "交换前";
+{/*{{{*/
+  std::cout << "交换前";
   LeverOrder();
   Exchange(root_);
-  cout << "交换后";
+  std::cout << "交换后";
   LeverOrder();
-}
+}/*}}}*/
 #endif // BINARY_TREE_H
