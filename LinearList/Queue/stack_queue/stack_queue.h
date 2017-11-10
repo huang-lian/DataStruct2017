@@ -10,10 +10,10 @@ template<class Type>
 class StackQueue{
   public:
     StackQueue(void);
-    StackQueue(const StackQueue<Type> & st_q);
+    StackQueue(const StackQueue<Type> & stq);
     ~StackQueue(void);
 
-    const StackQueue<Type> & operator=(const StackQueue<Type> & st_q);
+    const StackQueue<Type> & operator=(const StackQueue<Type> & stq);
     
     // 清空队列,重置首尾指针
     void MakeNull(void);
@@ -37,30 +37,19 @@ class StackQueue{
     bool IsFull(void) const;
 
   private:
-    void Balance(void);
     LinkStack<Type> st_in_;
     LinkStack<Type> st_out_;
 
 };
-template<class Type>
-void StackQueue<Type>::Balance(void) {
-  if (st_out_.IsEmpty()) {
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
-    }
-  }
-}
-
 
 template<class Type>
 StackQueue<Type>::StackQueue() {
 }
 
 template<class Type>
-StackQueue<Type>::StackQueue(const StackQueue<Type> & st_q) {
-  st_in_ = st_q.st_in_;
-  st_out_ = st_q.st_out_;
+StackQueue<Type>::StackQueue(const StackQueue<Type> & stq) {
+  st_in_ = stq.st_in_;
+  st_out_ = stq.st_out_;
 }
 
 template<class Type>
@@ -68,9 +57,9 @@ StackQueue<Type>::~StackQueue(void) {
 }
 
 template<class Type>
-const StackQueue<Type> & StackQueue<Type>::operator=(const StackQueue<Type> & st_q) {
-  st_in_ = st_q.st_in_;
-  st_out_ = st_q.st_out_;
+const StackQueue<Type> & StackQueue<Type>::operator=(const StackQueue<Type> & stq) {
+  st_in_ = stq.st_in_;
+  st_out_ = stq.st_out_;
 }
 
 template<class Type>
@@ -91,18 +80,22 @@ template<class Type>
 bool StackQueue<Type>::DeQueue(void) {
   if (IsEmpty())
     return false;
-  Balance();
+  if (st_out_.IsEmpty())
+    while(!st_in_.IsEmpty()) {
+      st_out_.Push(st_in_.Top());
+      st_in_.Pop();
+    }
   st_out_.Pop();
   return true;
 }
 
 template<class Type>
 const Type & StackQueue<Type>::Front(void) {
-  if (IsEmpty()) {
-    Type zero;  // 避免出现段错误返回一个默认值
-    return zero;
-  }
-  Balance();
+  if (st_out_.IsEmpty())
+    while(!st_in_.IsEmpty()) {
+      st_out_.Push(st_in_.Top());
+      st_in_.Pop();
+    }
   return st_out_.Top();
 }
 
