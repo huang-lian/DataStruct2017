@@ -5,7 +5,7 @@
  **/
 #ifndef STACKQUEUE_H
 #define STACKQUEUE_H
-#include"../../Stack/link_stack/link_stack.h"
+#include"link_stack.h"
 template<class Type>
 class StackQueue{
   public:
@@ -37,8 +37,8 @@ class StackQueue{
     bool IsFull(void) const;
 
   private:
-    LinkStack<Type> st_in_;
-    LinkStack<Type> st_out_;
+    LinkStack<Type> stin_;
+    LinkStack<Type> stout_;
 
 };
 
@@ -48,8 +48,8 @@ StackQueue<Type>::StackQueue() {
 
 template<class Type>
 StackQueue<Type>::StackQueue(const StackQueue<Type> & stq) {
-  st_in_ = stq.st_in_;
-  st_out_ = stq.st_out_;
+  stin_ = stq.stin_;
+  stout_ = stq.stout_;
 }
 
 template<class Type>
@@ -58,21 +58,21 @@ StackQueue<Type>::~StackQueue(void) {
 
 template<class Type>
 const StackQueue<Type> & StackQueue<Type>::operator=(const StackQueue<Type> & stq) {
-  st_in_ = stq.st_in_;
-  st_out_ = stq.st_out_;
+  stin_ = stq.stin_;
+  stout_ = stq.stout_;
 }
 
 template<class Type>
 void StackQueue<Type>::MakeNull(void) {
-  st_in_.MakeNull();
-  st_out_.MakeNull();
+  stin_.MakeNull();
+  stout_.MakeNull();
 }
 template<class Type>
 bool StackQueue<Type>::EnQueue(const Type & data) {
   if(IsFull()) {
     return false;
   }
-  st_in_.Push(data);
+  stin_.Push(data);
   return true;
 }
 
@@ -80,44 +80,47 @@ template<class Type>
 bool StackQueue<Type>::DeQueue(void) {
   if (IsEmpty())
     return false;
-  if (st_out_.IsEmpty())
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
+  if (stout_.IsEmpty())
+    while(!stin_.IsEmpty()) {
+      stout_.Push(stin_.Top());
+      stin_.Pop();
     }
-  st_out_.Pop();
+  stout_.Pop();
   return true;
 }
 
 template<class Type>
 const Type & StackQueue<Type>::Front(void) {
-  if (st_out_.IsEmpty())
-    while(!st_in_.IsEmpty()) {
-      st_out_.Push(st_in_.Top());
-      st_in_.Pop();
+  if (stout_.IsEmpty())
+    while(!stin_.IsEmpty()) {
+      stout_.Push(stin_.Top());
+      stin_.Pop();
     }
-  return st_out_.Top();
+  return stout_.Top();
 }
 
 template<class Type>
 bool StackQueue<Type>::Front(Type & data) {
   if (IsEmpty())
     return false;
-  Balance();
-  data = st_out_.Top();
-  return true;
+  if (stout_.IsEmpty())
+    while(!stin_.IsEmpty()) {
+      stout_.Push(stin_.Top());
+      stin_.Pop();
+    }
+  return stout_.Top(data);
 }
 
 template<class Type>
 bool StackQueue<Type>::IsEmpty(void) const {
-  if (st_in_.IsEmpty() && st_out_.IsEmpty())
+  if (stin_.IsEmpty() && stout_.IsEmpty())
     return true;
   return false;
 }
 
 template<class Type>
 bool StackQueue<Type>::IsFull(void) const {
-  if (st_in_.IsFull() || st_out_.IsFull())
+  if (stin_.IsFull() || stout_.IsFull())
     return true;
   return false;
 }

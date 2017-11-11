@@ -4,8 +4,8 @@
 int main(void)
 {
   using namespace std;
-  //Expr a("(-5)+(11)-34*(1-(-5))%12-2.34");
-  Expr a("3+5/2");
+  Expr a("(-5)+(11)-34*(1-(-5))%12-2.34");
+  cout << "a demo :\n";
   a.DisPlay();
   Expr::Limits();
   while(!EnterQ()) {

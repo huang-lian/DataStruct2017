@@ -317,6 +317,7 @@ void Expr::set_postfix_expr(void)
 	PostInsert(op_stack.Top(),postfix_expr_);
 	op_stack.Pop();
       }	
+      op_stack.Push(p);
     }
   }/*}}}*/
 
@@ -325,7 +326,6 @@ void Expr::set_postfix_expr(void)
     PostInsert(op_stack.Top(),postfix_expr_);
     op_stack.Pop();
   }	
-
 }/*}}}*/
 
 void Expr::set_value(void)
@@ -349,12 +349,21 @@ void Expr::set_value(void)
 	case '+': value_ += t; break;
 	case '-': value_ -= t; break;
 	case '*': value_ *= t; break;
-	case '/': value_ /= t; break;
+	case '/':
+		  if ( t <= 10e-6 && t >= -10e-6) {
+		    is_valid_ = false;
+		    break;
+		  }
+		  value_ /= t; break;
 	case '%': value_ = int(value_)%int(t); break;
       }
       num_stack.Push(value_);
     }
 
+  }
+  if (!is_valid()) {
+    Free();
+    return;
   }
   num_stack.Top(value_);
 }/*}}}*/
@@ -364,8 +373,10 @@ void Expr::CommCopyAndAssign(const Expr & aexpr)
  for(ExprNode * p = aexpr.infix_expr_; NULL != p; p = p->next) {
    PostInsert(p,infix_expr_);
  } 
- set_postfix_expr();
- set_value();
+ for(ExprNode * p = aexpr.postfix_expr_; NULL != p; p = p->next) {
+   PostInsert(p,postfix_expr_);
+ } 
+ value_ = aexpr.value_;
  is_valid_ = aexpr.is_valid_;
 }/*}}}*/
 
@@ -459,6 +470,7 @@ std::istream & operator>>(std::istream & is, Expr & aexpr)
 {/*{{{*/
   char expr[MAX_SIZE] = {0};
   is.getline(expr, MAX_SIZE);
+  std::cout << "Input is :\n" << expr << std::endl;
   aexpr = Expr(expr);
   return is;
 }/*}}}*/

@@ -1,5 +1,6 @@
 #include<iostream>
 #include"ian.h"
+// 自定义的用于实现一些小操作的函数
 char LineAchar(void)
 {
   char ch;
@@ -22,14 +23,10 @@ bool YesOrNo(const char * msg)
     std::cout << msg;
     ch = LineAchar();
     switch(ch) {
-      case '1':
       case 'y':
       case 'Y': return true;
-      case '0':
       case 'n':
-      case 'N':
-      case 'q':
-      case 'Q': return false;
+      case 'N': return false;
     }
   }
 }

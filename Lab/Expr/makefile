@@ -1,0 +1,38 @@
+TARGET = main.out
+OBJS = main.o expr.o ian.o
+INC =../include
+vpath %.h ../include/
+vpath %.o ../obj/
+vpath %,cpp ../src/:
+
+CPP = g++
+CPPFLAGS = -fexec-charset=utf-8 -Wall -O1 -g  -std=c++11 -I $(INC)
+$(TARGET): $(OBJS)
+	$(CPP) $^ -o $@ $(CPPFLAGS)
+	$(RM) $(OBJS) *.d
+%.d : %.cpp
+	@set -e; $(RM) $@; \
+	  $(CPP) -MM $< $(CPPFLAGS) > $@.$$$$; \
+	  sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	  $(RM) $@.$$$$
+-include $(OBJS:.o=.d)
+.PHONY: clean run test fix 
+clean:
+	@set -e; $(RM) $(TARGET) $(OBJS) *.d
+run :
+	@set -e; make; \
+	./$(TARGET);\
+	make clean
+fix : 
+	@set -e; make; \
+	cat test.txt; \
+	./$(TARGET) < debug.txt;\
+	make clean
+	
+
+test :
+	@set -e; make; \
+	echo " 测试文件";\
+	cat test.txt; \
+	./$(TARGET) < test.txt;\
+	make clean

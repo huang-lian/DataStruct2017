@@ -6,7 +6,7 @@
  * */
 #ifndef QUEUE_STACK_H
 #define QUEUE_STACK_H
-#include"../link_queue/link_queue.h"
+#include"link_queue.h"
 template<class Type>
 class QueueStack {
   public:
@@ -63,7 +63,6 @@ template<class Type>
 bool QueueStack<Type>::Push(const Type & data) {
  if (IsFull())
     return false;
-  Type tmp_data;
   if (st1_.IsEmpty()) {
     st1_.EnQueue(data);
     while(!st2_.IsEmpty()) {
