@@ -100,22 +100,36 @@ bool LinkList<Type>::Append(const Type & x)
 }/*}}}*/
 
 // 插在pos位置,其余後移动
+// 应确保pos存在链表中
   template<class Type>
 bool LinkList<Type>::Insert(const Type & x, const Postion pos)
-{/*{{{*/
-  for (Postion p = header_; NULL != p; p = p->next) {
-    if (pos == p) {
-      p = new Element(pos->item);  // 新节点继承pos节点全部信息
-      p->next = pos->next;
-      pos->next = p;
-      pos->item = x;              // x 插在pos
-      if (pos == last_)
-	last_ = p;
-      return true;
-    }
-  }
-  return false;
-}/*}}}*/
+{
+  Postion p = new Element(pos->item);  // 新节点继承pos节点全部信息
+  p->next = pos->next;
+  pos->next = p;
+  pos->item = x;              // x 插在pos
+  if (pos == last_)
+    last_ = p;
+  return true;
+
+}
+
+//  template<class Type>
+//bool LinkList<Type>::Insert(const Type & x, const Postion pos)
+//{/*{{{*/
+//  for (Postion p = header_; NULL != p; p = p->next) {
+//    if (pos == p) {
+//      p = new Element(pos->item);  // 新节点继承pos节点全部信息
+//      p->next = pos->next;
+//      pos->next = p;
+//      pos->item = x;              // x 插在pos
+//      if (pos == last_)
+//	last_ = p;
+//      return true;
+//    }
+//  }
+//  return false;
+//}/*}}}*/
 
 // 删除pos节点
 // 返回删除结果
