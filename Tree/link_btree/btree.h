@@ -1,6 +1,6 @@
 // C++ file
 /*
- * 左右链结构的二叉树的遍历以及建立
+ * 左右链结构的二叉树的模板
  * */
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
@@ -45,15 +45,14 @@ class BinaryTree{
     void Free(BTreeNode * &root);
 };
 
-
-
-
 template<class Type>
-void BinaryTree<Type>::Exchange(BTreeNode * &root) const
+void BinaryTree<Type>::Visit(const BTreeNode * root) const
 {/*{{{*/
-  if (NULL != root) {
-    BTreeNode *p = root->lchild;
-    root->lchild = root->rchild;
+  if (NULL != root)
+    std::cout << root->data;
+  else
+    std::cout << "NULL" << std::endl;
+}/*}}}*/ template<class Type> size_t BinaryTree<Type>::Count(const BTreeNode * root) const {/*{{{*/ if (NULL == root) return 0; return Count(root->lchild) + Count(root->rchild) + 1; }/*}}}*/ template<class Type> void BinaryTree<Type>::Exchange(BTreeNode * &root) {/*{{{*/ if (NULL != root) { BTreeNode *p = root->lchild; root->lchild = root->rchild;
     root->rchild = p;
     Exchange(root->lchild);
     Exchange(root->rchild);
@@ -71,8 +70,8 @@ size_t BinaryTree<Type>::Height(const BTreeNode * root) const
   return (m>n)?m + 1: n +1;
 }/*}}}*/
 
-template<class Type>
-bool BinaryTree<Type>::Equal(const BTreeNode * root1, const BTreeNode *root2) const 
+  template<class Type>
+bool BinaryTree<Type>::Equal(const BTreeNode * root1, const BTreeNode *root2)
 {/*{{{*/
   if (NULL == root1 && NULL == root2)
     return true;
@@ -82,9 +81,21 @@ bool BinaryTree<Type>::Equal(const BTreeNode * root1, const BTreeNode *root2) co
   return false;
 } //:~Equal/*}}}*/
 
+  template<class Type>
+typename BinaryTree<Type>::BTreeNode * BinaryTree<Type>::Copy(const BTreeNode * root)
+{/*{{{*/
+  BTreeNode * tmp = NULL;
+  if(NULL != root) {
+    tmp = new BTreeNode;
+    tmp->data = root->data;
+    tmp->lchild = Copy(root->lchild);
+    tmp->rchild = Copy(root->rchild);
+  }
+  return tmp;
+} //:~Copy/*}}}*/
 
-template<class Type>
-void BinaryTree<Type>::Free(BTreeNode * & root) const 
+  template<class Type>
+void BinaryTree<Type>::Free(BTreeNode * & root)
 {/*{{{*/
   if(NULL != root)
   {
@@ -136,14 +147,14 @@ void BinaryTree<Type>::MakeNull(void)
 void BinaryTree<Type>::Create(void)
 {/*{{{*/
   int i=0, j = 0;
-  char ch = '#';
+  Type data;
   struct BTreeNode *p;
   const int max_size = 101;
   struct BTreeNode *arr[max_size];   // 用于保存结点地址,便于后续录入.
   std::cout << "\
     非递归建立左右链式的二叉树.\n\
     依次输入结点编号 节点数据.以空白符号分隔.\n\
-    结束标识是: 0 # \n\
+    结束标识节点是编号小于１: \n\
     示例:\n\
     1 A 2 B 3 C 4 D 5 E 6 F 7 G 8 H 9 I 11 J 0 #\n\
     说明:\n\
@@ -154,16 +165,28 @@ void BinaryTree<Type>::Create(void)
     4. 不符合二叉树结构的数据也会造成内存泄漏或者错误.暂时未解决.\n\
     参考: DS2017_PPT-3-45_Li\n\
     逻辑上是和完全二叉树的顺序存储结构一致\n";
-  std::cin >> i >> ch;
-  if(!std::cin.good()) {
-    std::cout << "输入有错误!\n";
-    std::cin.clear();
-    while('\n' != std::cin.get());
-  }
-  while(i>0 && i < max_size&& '#' != ch)
-  {
+  while(true) {
+    std::cin >> i;
+
+    if(!std::cin.good()) {
+      std::cout << "输入有错误!\n";
+      std::cin.clear();
+      while('\n' != std::cin.get());
+      break;
+    }
+
+    if(1 > i)
+      break;
+    std::cin >> data;
+    if(!std::cin.good()) {
+      std::cout << "输入有错误!\n";
+      std::cin.clear();
+      while('\n' != std::cin.get());
+      break;
+    }
+
     p = new BTreeNode;
-    p->data = ch;
+    p->data = data;
     p->lchild = p->rchild= NULL;
     arr[i] = p;  // 保存数据
     if(1 == i) {
@@ -176,19 +199,13 @@ void BinaryTree<Type>::Create(void)
 	arr[j]->rchild = p;
       }
     }
-    std::cin >>i >> ch;
-    if(!std::cin.good()) {
-      std::cout << "输入有错误!\n";
-      std::cin.clear();
-      while('\n' != std::cin.get());
-      break;
-    }
   }
 }/*}}}*/
 
 template<class Type>
 void BinaryTree<Type>::PreOrder(void) const
 {/*{{{*/
+  std::cout << "非递归先序遍历\n";
   LinkStack<BTreeNode *> st;
   BTreeNode * p = root_;
   while(NULL != p || !st.IsEmpty()) {
@@ -208,6 +225,7 @@ void BinaryTree<Type>::PreOrder(void) const
 template<class Type>
 void BinaryTree<Type>::InOrder(void) const
 {/*{{{*/
+  std::cout << "非递归中序遍历\n";
   LinkStack<BTreeNode *> st;
   BTreeNode * p = root_;
   while(NULL != p || !st.IsEmpty()) {
@@ -227,6 +245,7 @@ void BinaryTree<Type>::InOrder(void) const
 template<class Type>
 void BinaryTree<Type>::PostOrder(void) const
 {/*{{{*/
+  std::cout << "非递归后序遍历\n";
   struct PostOrderView{
     BTreeNode * ptr;
     int tag;  // 1 表示初次访问
