@@ -1,5 +1,13 @@
 #ifndef LINK_LIST_H
 #define LINK_LIST_H
+
+// 链式结构的线性表.
+// 在本线性表中没有进行任何的参数合法性检查.
+// 你在使用任何的postion 类型的参数,应当make sure the argment is Not NULL and 他来自本链表,
+// 否则,后果是严重的.
+// 检测链表是否为空,可以查看First 或者end的返回值是否为空.
+// Append是一个无条件后插的方法.新增加的元素都在链表的结尾.
+// 在first不为空的情况.可以使用Insert(First())实现头插法.
 template<class Type>
 class LinkList{
   public:
@@ -103,16 +111,16 @@ bool LinkList<Type>::Append(const Type & x)
 // 应确保pos存在链表中
   template<class Type>
 bool LinkList<Type>::Insert(const Type & x, const Postion pos)
-{
+{/*{{{*/
   Postion p = new Element(pos->item);  // 新节点继承pos节点全部信息
   p->next = pos->next;
   pos->next = p;
-  pos->item = x;              // x 插在pos
+  pos->item = x;              // x 赋值在pos
   if (pos == last_)
     last_ = p;
   return true;
 
-}
+}/*}}}*/
 
 //  template<class Type>
 //bool LinkList<Type>::Insert(const Type & x, const Postion pos)
@@ -138,7 +146,7 @@ bool LinkList<Type>::Delete(const Postion pos)
 {/*{{{*/
   if (NULL != pos) {
     Postion  p = header_;
-    if (pos == header_) {
+    if (pos == header_) {  // 删除头的情况
       header_ = header_->next;
       if (pos == last_) last_ = header_;
       delete pos;
