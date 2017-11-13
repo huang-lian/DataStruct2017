@@ -1,0 +1,43 @@
+#include<iostream>
+#include"link_list.h"
+
+void display(LinkList<int> & arr) {
+  LinkList<int>::Postion p = arr.First();
+  int cnt = 0;
+  for(; NULL != p; p = arr.Next(p)) {
+    std::cout << arr.Retrieve(p)<< "\t";
+    cnt ++;
+  }
+  std::cout<< "\ncount : " << cnt  << std::endl;
+}
+int main(void) {
+  using namespace std;
+  LinkList<int> arr;
+  int ch = 1;
+  int n;
+  while(0 != ch) {
+    display(arr);
+    cout << "0.Exit\t1.Append\t 2.Insert\t3.Delete\n";
+    cin >> ch;
+    switch(ch) {
+      case 1:
+	cout << "InPut a Num :";
+	cin >> n;
+	arr.Append(n);
+	cout << "Append " << n << endl;
+	break;
+      case 2:
+	cout << "insert n @ No.x Input n,x,x from 0 to Count";
+	cin >> ch >> n;
+	LinkList<int>::Postion p;
+	for(p = arr.First(); NULL != p; p = arr.Next(p))
+	{
+	  if(0 == --x) {
+
+	  }
+	}
+
+    }
+  }
+  return 0;
+}

@@ -3,6 +3,14 @@
 template<class Type>
 class LinkList{
   public:
+    struct Element {
+      Type item;
+      struct Element * next;
+      Element(const Type & data) : item(data), next(NULL) {
+      };
+    };
+    typedef Element * Postion;
+
     LinkList(void);
     LinkList(const LinkList<Type> & lk_l);
     ~LinkList(void);
@@ -10,215 +18,187 @@ class LinkList{
 
     void MakeNull(void);
 
+    // 表添加一个数据
     bool Append(const Type & x);
-    bool Insert(const Type & x, size_t pos);
-    bool Delete(size_t pos);
 
-    size_t Locate(const Type & x) const;
-    const Type & Retrieve(size_t pos) const;
+    // 在pos后添加一个数据
+    bool Insert(const Type & x,const Postion pos);
 
-    const Type & Previous(size_t pos) const;
-    const Type & Next(size_t pos) const;
-    const Type & First(void) const;
-    const Type & End(void) const;
+    // 删除地址为pos节点数据
+    bool Delete(const Postion pos);
 
-    size_t size(void) const {return size_;};
-    const Type & operator[](size_t pos) const;
-    Type & operator[](size_t pos); 
+    // 返回第一个值与x相等的数据
+    Postion Locate(const Type & x) const;
+
+    // 返回数据位置
+    const Type & Retrieve(const Postion pos) const;
+
+    Postion Previous(const Postion pos) const;
+    Postion Next(const Postion pos) const;
+
+    Postion First(void) const;
+    Postion End(void) const;
+
   private:
-    // 合并operator=和拷贝构造函数公共内容
-    void SetLink(const LinkList<Type> & lk_l);
 
-    // 使用头插法,使得建立表更加容易
-    // 新建立的节点对应的索引值更大,总是指向前一个节点
-    struct Element {
-      Type data;
-      struct Element * previous;
-    };
-    size_t size_;
-    Element * header;
+    Element * header_;
+    Element * last_;
 };
 
-template<class Type>
-void LinkList<Type>::SetLink(const LinkList<Type> & lk_l) {
-  size_ = lk_l.size_;
+  template<class Type>
+LinkList<Type>::LinkList(void) :header_(NULL),last_(NULL)
+{/*{{{*/
+}/*}}}*/
 
-  Element *p = lk_l.header;
-  Element *new_elemt = NULL;
-  Element *pre_elemt = NULL;
+  template<class Type>
+LinkList<Type>::LinkList(const LinkList<Type> & lk_l):header_(NULL),last_(NULL)
+{/*{{{*/
+  *this = lk_l;
+}/*}}}*/
 
-  if(NULL != p) {
-    new_elemt = new Element;
-    new_elemt->data = p->data;
-    header = new_elemt;
-    pre_elemt = new_elemt;
-
-    p = p->previous;
-  }
-  while(NULL != p) {
-    new_elemt = new Element;
-    new_elemt->data = p->data;
-    pre_elemt->previous = new_elemt;
-    pre_elemt = new_elemt;
-
-    p = p->previous;
-  }
-  pre_elemt->previous = NULL;
-}
-template<class Type>
-LinkList<Type>::LinkList(void) : size_(0), header(NULL) {
-}
-
-template<class Type>
-LinkList<Type>::LinkList(const LinkList<Type> & lk_l) {
-  SetLink(lk_l);
-}
-
-template<class Type>
-LinkList<Type>::~LinkList(void) {
+  template<class Type>
+LinkList<Type>::~LinkList(void)
+{/*{{{*/
   MakeNull();
-}
-template<class Type>
-const LinkList<Type> & LinkList<Type>::operator=(const LinkList<Type> & lk_l) {
-  if (&lk_l == this)
+}/*}}}*/
+
+  template<class Type>
+const LinkList<Type> & LinkList<Type>::operator=(const LinkList<Type> & lk_l)
+{/*{{{*/
+  if (&lk_l != this) {
+    MakeNull();
+    for(Postion p = lk_l.header_; NULL != p; p = p->next)
+    {
+      Append(p->item);
+    }
+  }
     return *this;
-  MakeNull();
-  SetLink(lk_l);
-}
-template<class Type>
-void LinkList<Type>::MakeNull(void) {
-  size_ = 0;
+}/*}}}*/
 
-  Element *p = header;
-  while(NULL != header) {
-    p = header;
-    header = header->previous;
+  template<class Type>
+void LinkList<Type>::MakeNull(void)
+{/*{{{*/
+  Element *p = header_;
+  while(NULL != header_) {
+    p = header_;
+    header_= header_->next;
     delete p;
   }
-}
+}/*}}}*/
 
-// 追加快速,头插法:
-template<class Type>
-bool LinkList<Type>::Append(const Type & x) {
-  Element * new_elemt = NULL;
-  try {
-    new_elemt = new Element;
-  } catch (const std::bad_alloc & e) {
-    return false;
-  }
-  size_ ++;
-  new_elemt->data = x;
-  new_elemt->previous = header;
-  header = new_elemt;
-
-  return true;
-}
-
-template<class Type>
-bool LinkList<Type>::Insert(const Type & x, size_t pos) {
-  if (pos > size_) return false;
-  if (pos == size_) return Append(x);
-
-  Element * new_elemt = NULL;
-  try {
-    new_elemt= new Element;
-  } catch (const std::bad_alloc & e) {
-    return false;
-  }
-  new_elemt->data = x;
-
-  Element *p = NULL;  // p标识要插入的节点的前一个节点,对应的索引值大1
-  p = header;
-
-  // 考虑pos==size_ -2 是不进入循环
-  // #fixed
-  for(size_t i = size_ - 2; i > pos;i--) {
-    p = p->previous;
-  }
-
-  new_elemt->previous = p->previous;  // 继承pre
-  p->previous = new_elemt;   // p->pre 是新的元素
-
-  size_++;
-  return true;
-}
-
-template<class Type>
-bool LinkList<Type>::Delete(size_t pos) {
-  if (pos > size_ -1) return false;
-  Element * p = NULL;  // 标识待删除节点
-  if (pos == size_ -1) {
-    p = header;
-    header = header->previous;
+  template<class Type>
+bool LinkList<Type>::Append(const Type & x)
+{/*{{{*/
+  if (NULL == header_) {
+    header_ = new Element(x);
+    last_ = header_;
   } else {
-    Element *pre = header;  // 标识要删除的节点的前一个节点,对应的索引值大1
-
-    // 假定要删除的是索引pos为size_ - 2的值
-    // 需要pre索引为size-1,不发生计数,直接操作
-    for(size_t i = size_ - 2; i > pos;i--) { 
-      pre = pre->previous;
-    }
-    p = pre->previous;
-    pre->previous = p->previous;
+    last_->next = new Element(x);
+    last_ = last_->next;
   }
-
-  size_ --;
-  delete p;
   return true;
-}
+}/*}}}*/
 
-template<class Type>
-size_t LinkList<Type>::Locate(const Type & x) const {
-  Element *p = header;
-  for(size_t i = (size_ -1); NULL != p;i--) {
-    if (x == p.data)
-      return i;
-    p = p->previous;
+// 插在pos位置,其余後移动
+  template<class Type>
+bool LinkList<Type>::Insert(const Type & x, const Postion pos)
+{/*{{{*/
+  for (Postion p = header_; NULL != p; p = p->next) {
+    if (pos == p) {
+      p = new Element(pos->item);  // 新节点继承pos节点全部信息
+      p->next = pos->next;
+      pos->next = p;
+      pos->item = x;              // x 插在pos
+      if (pos == last_)
+	last_ = p;
+      return true;
+    }
   }
-  return -1;
-}
+  return false;
+}/*}}}*/
 
-template<class Type>
-const Type & LinkList<Type>::Retrieve(size_t pos) const {
-  return (*this)[pos];
-}
-
-template<class Type>
-const Type & LinkList<Type>::Previous(size_t pos) const {
-  return (*this)[pos-1];
-}
-
-template<class Type>
-const Type & LinkList<Type>::Next(size_t pos) const {
-  return (*this)[pos+1];
-}
-
-template<class Type>
-const Type & LinkList<Type>::First(void) const {
-  return (*this)[0];
-}
-
-template<class Type>
-const Type & LinkList<Type>::End(void) const {
-  return (*this)[size_ -1];
-}
-
-// pos 越界必然段错误
-template<class Type>
-const Type & LinkList<Type>::operator[](size_t pos) const {
-  Element *p = header;
-  for(size_t i = size_ -1; i > pos; i--){
-    p = p->previous;
+// 删除pos节点
+// 返回删除结果
+  template<class Type>
+bool LinkList<Type>::Delete(const Postion pos)
+{/*{{{*/
+  if (NULL != pos) {
+    Postion  p = header_;
+    if (pos == header_) {
+      header_ = header_->next;
+      if (pos == last_) last_ = header_;
+      delete pos;
+      return true;
+    }
+    for(p = header_; NULL != p; p = p->next) {
+      if(pos == p->next) {
+	p->next = pos->next;
+	if (pos == last_) last_ = p;
+	delete pos;
+	return true;
+      }
+    }
   }
-  return p->data;
-}
+  return false;
+}/*}}}*/
+
+// 放回值为x的第一个节点,
+// 不存在为null
+template<class Type>
+typename LinkList<Type>::Postion LinkList<Type>::Locate(const Type & x) const
+{/*{{{*/
+  Postion p = header_;
+  for(; NULL != p; p = p->next) {
+    if (x == p->data) {
+      break;
+    }
+  }
+  return p;
+}/*}}}*/
+
+
+// 返回pos位置的数据
+// 应确保pos存在链表中
+template<class Type>
+const Type & LinkList<Type>::Retrieve(const Postion pos) const
+{/*{{{*/
+  return pos->item;
+}/*}}}*/
+
+// 返回前一个位置
+// 应当确保pos存在
+template<class Type>
+typename LinkList<Type>::Postion LinkList<Type>::Previous(const Postion pos) const
+{/*{{{*/
+  Postion p = header_;
+  Postion pr = NULL;
+  for(;NULL != p; p = p->next) {
+    if(pos == p) {
+      return pr;
+    }
+    pr = p;
+  }
+  return NULL;
+}/*}}}*/
+
+// 返回下一个位置
+// 应当确保pos存在
+template<class Type>
+typename LinkList<Type>::Postion LinkList<Type>::Next(const Postion pos) const
+{/*{{{*/
+  return pos->next;
+}/*}}}*/
 
 template<class Type>
-Type & LinkList<Type>::operator[](size_t pos) {
-  Element *p = header;
-  for(size_t i = size_ -1; i > pos; i--) {
-    p = p->previous;
-  }
-  return p->data;
-}
+typename LinkList<Type>::Postion LinkList<Type>::First(void) const
+{/*{{{*/
+  return header_;
+}/*}}}*/
+
+template<class Type>
+typename LinkList<Type>::Postion LinkList<Type>::End(void) const
+{/*{{{*/
+  return last_;
+}/*}}}*/
+
 #endif //LINK_LIST_H
