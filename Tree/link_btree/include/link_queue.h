@@ -53,9 +53,23 @@ LinkQueue<Type>::LinkQueue(void) {
 }
 template<class Type>
 LinkQueue<Type>::LinkQueue(const LinkQueue<Type> & lk_q) {
-  front_ = NULL;
-  rear_ = NULL;
-  *this = lk_q;
+  Element *p = lk_q.front_; // 按照之前的序列入队
+  Element * new_elem = NULL;
+
+  // 单独处理第一节点,避免以后每次都要判断
+  if (NULL != p) {
+    rear_ = new Element;
+    rear_->data = p->data;
+    p = p->next;
+  }
+  while(NULL != p) {
+    new_elem = new Element;
+    new_elem->data = p->data;
+
+    rear_->next = new_elem;
+    p = p->next;
+  }
+  rear_->next = NULL;
 }
 
 template<class Type>
@@ -70,7 +84,8 @@ const LinkQueue<Type> & LinkQueue<Type>::operator=(const LinkQueue<Type> & lk_q)
   MakeNull();
 
   Element *p = lk_q.front_; // 按照之前的序列入队
-  
+  Element * new_elem = NULL;
+
   // 单独处理第一节点,避免以后每次都要判断
   if (NULL != p) {
     rear_ = new Element;
@@ -79,14 +94,13 @@ const LinkQueue<Type> & LinkQueue<Type>::operator=(const LinkQueue<Type> & lk_q)
     p = p->next;
   }
   while(NULL != p) {
-    rear_->next = new Element;
-    rear_ = rear_->next;
-    rear_->data = p->data;
+    new_elem = new Element;
+    new_elem->data = p->data;
+
+    rear_->next = new_elem;
     p = p->next;
   }
-  if (NULL != rear_)
-    rear_->next = NULL;
-  return *this;
+  rear_->next = NULL;
 }
 
 template<class Type>

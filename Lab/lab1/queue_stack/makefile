@@ -1,7 +1,9 @@
 TARGET = main.out
 OBJS = main.o 
-INC =./include
-VPATH = src:include
+INC =../include
+vpath %.h ../include/
+vpath %.o ../obj/
+vpath %,cpp ../src/:
 
 CPP = g++
 CPPFLAGS = -fexec-charset=utf-8 -Wall -O1 -g  -std=c++11 -I $(INC)
@@ -16,12 +18,12 @@ $(TARGET): $(OBJS)
 -include $(OBJS:.o=.d)
 .PHONY: clean run test
 clean:
-	$(RM) $(TARGET) $(OBJS) *.d
+	@set -e; $(RM) $(TARGET) $(OBJS) *.d
 run :
 	@set -e; make; \
-	  $(RM) $(OBJS) *.d
-	./$(TARGET)
-test:
+	./$(TARGET);\
 	make clean
-	make
-	./$(TARGET) < test.txt
+test :
+	@set -e; make; \
+	./$(TARGET) < test.txt;\
+	make clean

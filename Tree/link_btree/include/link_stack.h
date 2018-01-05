@@ -45,28 +45,27 @@ LinkStack<Type>::LinkStack(void) :top_(0) {
 template<class Type>
 LinkStack<Type>::LinkStack(const LinkStack<Type> & lk_st) {
   Element *p = top_;
-  Element *pre = NULL;
-  Element *newnode = NULL;
+  Element *pre_new_st_element = NULL;
+  Element *new_st_element = NULL;
 
   if (NULL != p) {
-    newnode = new Element;   // #fix #Q 此处new失败该如何处理
-    newnode->data = p->data;
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
 
-    lk_st.top_ = newnode;
-    pre = newnode;
+    lk_st.top_ = new_st_element;
+    pre_new_st_element = new_st_element;
     p = p->next;
   }
   
   for(; NULL != p; p = p->next) {
-    newnode = new Element;   // #fix #Q 此处new失败该如何处理
-    newnode->data = p->data;
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
 
-    pre->next = newnode;
+    pre_new_st_element->next = new_st_element;
     
-    pre = newnode;
+    pre_new_st_element = new_st_element;
   }
-  if(NULL != pre)
-  pre->next = NULL;
+  pre_new_st_element->next = NULL;
 }
 
 template<class Type>
@@ -75,29 +74,28 @@ const LinkStack<Type> & LinkStack<Type>::operator=(const LinkStack<Type> & lk_st
     return *this;
   MakeNull();
   Element *p = lk_st.top_;
-  Element *pre = NULL;
-  Element *newnode = NULL;
+  Element *pre_new_st_element = NULL;
+  Element *new_st_element = NULL;
 
   if (NULL != p) {
-    newnode = new Element;   // #fix #Q 此处new失败该如何处理
-    newnode->data = p->data;
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
 
-    top_ = newnode;
-    pre = newnode;
+    top_ = new_st_element;
+    pre_new_st_element = new_st_element;
     p = p->next;
   }
   
   for(; NULL != p; p = p->next) {
-    newnode = new Element;   // #fix #Q 此处new失败该如何处理
-    newnode->data = p->data;
+    new_st_element = new Element;   // #fix #Q 此处new失败该如何处理
+    new_st_element->data = p->data;
 
-    pre->next = newnode;
+    pre_new_st_element->next = new_st_element;
     
-    pre = newnode;
+    pre_new_st_element = new_st_element;
   }
 
-  if (NULL != pre)
-  pre->next = NULL;
+  pre_new_st_element->next = NULL;
 
   return *this;
 }

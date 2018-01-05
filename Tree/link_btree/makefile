@@ -16,7 +16,7 @@ $(TARGET): $(OBJS)
 -include $(OBJS:.o=.d)
 .PHONY: clean run test
 clean:
-	$(RM) $(TARGET) $(OBJS) *.d
+	$(RM) $(TARGET) $(OBJS) *.d *.d.*
 run :
 	@set -e; make; \
 	  $(RM) $(OBJS) *.d
